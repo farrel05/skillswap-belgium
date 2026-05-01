@@ -3,9 +3,18 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useLang } from '../LanguageContext';
+import { t } from '../i18n';
+import LanguageSwitcher from '../LanguageSwitcher';
 
-const CATEGORIES = ['Tous', 'Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching'];
+const CATEGORIES_I18N = {
+  fr: ['Tous', 'Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching'],
+  nl: ['Allen', 'Tech / Dev', 'Design', 'Marketing', 'Schrijven', 'Boekhouding', 'Foto / Video', 'Talen', 'Coaching'],
+  en: ['All', 'Tech / Dev', 'Design', 'Marketing', 'Writing', 'Accounting', 'Photo / Video', 'Languages', 'Coaching'],
+};
+const CATEGORIES_DB = ['Tous', 'Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching'];
 const REGIONS = ['Toutes', 'Bruxelles', 'Wallonie', 'Flandre'];
+
 const AVATAR_COLORS = [
   'linear-gradient(135deg,#6C63FF,#EC4899)',
   'linear-gradient(135deg,#10B981,#3B82F6)',
@@ -38,16 +47,17 @@ const styles = `
 
 export default function ExplorePage() {
   const router = useRouter();
+  const { lang } = useLang();
   const [profiles, setProfiles] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('Tous');
+  const [categoryIndex, setCategoryIndex] = useState(0); // index dans CATEGORIES_DB
   const [region, setRegion] = useState('Toutes');
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => { loadProfiles(); }, []);
-  useEffect(() => { filterProfiles(); }, [search, category, region, profiles]);
+  useEffect(() => { filterProfiles(); }, [search, categoryIndex, region, profiles]);
 
   const loadProfiles = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -60,18 +70,29 @@ export default function ExplorePage() {
 
   const filterProfiles = () => {
     let result = [...profiles];
+    const categoryDB = CATEGORIES_DB[categoryIndex];
     if (currentUser) result = result.filter(p => p.id !== currentUser.id);
-    if (search) result = result.filter(p => p.full_name?.toLowerCase().includes(search.toLowerCase()) || p.bio?.toLowerCase().includes(search.toLowerCase()) || p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase())));
+    if (search) result = result.filter(p =>
+      p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.bio?.toLowerCase().includes(search.toLowerCase()) ||
+      p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase()))
+    );
     if (region !== 'Toutes') result = result.filter(p => p.region === region);
-    if (category !== 'Tous') result = result.filter(p => p.skills_offered?.some(s => s.category === category));
+    if (categoryDB !== 'Tous') result = result.filter(p => p.skills_offered?.some(s => s.category === categoryDB));
     setFiltered(result);
   };
 
   const requestExchange = async (providerId) => {
     if (!currentUser) { router.push('/auth'); return; }
-    const { error } = await supabase.from('exchanges').insert({ requester_id: currentUser.id, provider_id: providerId, hours: 1, status: 'pending', message: 'Bonjour, je souhaite échanger nos compétences !' });
+    const { error } = await supabase.from('exchanges').insert({
+      requester_id: currentUser.id, provider_id: providerId,
+      hours: 1, status: 'pending',
+      message: 'Bonjour, je souhaite échanger nos compétences !'
+    });
     if (!error) alert('Demande d\'échange envoyée ! ✅');
   };
+
+  const categories = CATEGORIES_I18N[lang] || CATEGORIES_I18N.fr;
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F7FF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
@@ -84,14 +105,25 @@ export default function ExplorePage() {
           <span style={{ fontWeight: 800, fontSize: '17px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SkillSwap</span>
         </Link>
         <div style={{ display: 'flex', gap: '28px' }}>
-          {[['/dashboard','🏠 Dashboard',false],['/explore','🔍 Explorer',true],['/profile','👤 Profil',false],['/exchanges','🤝 Échanges',false]].map(([href,label,active]) => (
-            <Link key={href} href={href} className={`nav-link ${active?'active':''}`}>{label}</Link>
+          {[
+            ['/dashboard', t('nav.dashboard', lang), false],
+            ['/explore', t('nav.explore', lang), true],
+            ['/profile', t('nav.profile', lang), false],
+            ['/exchanges', t('nav.exchanges', lang), false],
+          ].map(([href, label, active]) => (
+            <Link key={href} href={href} className={`nav-link ${active ? 'active' : ''}`}>{label}</Link>
           ))}
         </div>
         {currentUser ? (
-          <Link href="/profile" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>Mon profil →</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <LanguageSwitcher />
+            <Link href="/profile" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>{t('nav.profile', lang)} →</Link>
+          </div>
         ) : (
-          <Link href="/auth" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>Se connecter</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <LanguageSwitcher />
+            <Link href="/auth" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>{t('nav.login', lang)}</Link>
+          </div>
         )}
       </nav>
 
@@ -99,27 +131,40 @@ export default function ExplorePage() {
 
         {/* Header */}
         <div style={{ marginBottom: '36px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#1A1635', marginBottom: '6px', letterSpacing: '-0.5px' }}>🔍 Explorer les profils</h1>
-          <p style={{ color: '#9290B0', fontSize: '14px' }}>{filtered.length} profil{filtered.length > 1 ? 's' : ''} disponible{filtered.length > 1 ? 's' : ''} en Belgique</p>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#1A1635', marginBottom: '6px', letterSpacing: '-0.5px' }}>{t('explore.title', lang)}</h1>
+          <p style={{ color: '#9290B0', fontSize: '14px' }}>
+            {filtered.length} {t('explore.profiles', lang)}{filtered.length > 1 ? 's' : ''} {t('explore.subtitle', lang)}
+          </p>
         </div>
 
         {/* Filters */}
         <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 20px rgba(108,99,255,0.06)' }}>
           <div style={{ position: 'relative', marginBottom: '20px' }}>
             <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px' }}>🔍</span>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher une compétence, un nom, une ville..." className="search-input" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder={t('explore.search', lang)}
+              className="search-input"
+            />
           </div>
           <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>RÉGION</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>{t('explore.region', lang)}</div>
               <div style={{ display: 'flex', gap: '7px' }}>
-                {REGIONS.map(r => <button key={r} onClick={() => setRegion(r)} className={`filter-btn ${region === r ? 'active' : ''}`}>{r}</button>)}
+                {REGIONS.map((r, i) => (
+                  <button key={r} onClick={() => setRegion(r)} className={`filter-btn ${region === r ? 'active' : ''}`}>
+                    {i === 0 ? t('explore.allRegions', lang) : r}
+                  </button>
+                ))}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>COMPÉTENCE</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>{t('explore.skill', lang)}</div>
               <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap' }}>
-                {CATEGORIES.map(c => <button key={c} onClick={() => setCategory(c)} className={`filter-btn ${category === c ? 'active' : ''}`}>{c}</button>)}
+                {categories.map((c, i) => (
+                  <button key={c} onClick={() => setCategoryIndex(i)} className={`filter-btn ${categoryIndex === i ? 'active' : ''}`}>{c}</button>
+                ))}
               </div>
             </div>
           </div>
@@ -129,13 +174,13 @@ export default function ExplorePage() {
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px', color: '#9290B0' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>⏳</div>
-            <p>Chargement des profils...</p>
+            <p>{t('common.loading', lang)}</p>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px', background: 'white', borderRadius: '20px', border: '1px solid #E8E6FF' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>👥</div>
-            <p style={{ fontSize: '18px', fontWeight: 700, color: '#1A1635', marginBottom: '8px' }}>Aucun profil trouvé</p>
-            <p style={{ fontSize: '14px', color: '#9290B0' }}>Essayez d'autres filtres ou élargissez votre recherche</p>
+            <p style={{ fontSize: '18px', fontWeight: 700, color: '#1A1635', marginBottom: '8px' }}>{t('explore.noResults', lang)}</p>
+            <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('explore.noResultsSub', lang)}</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '22px' }}>
@@ -147,7 +192,7 @@ export default function ExplorePage() {
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1635', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.full_name || 'Anonyme'}</div>
-                    <div style={{ fontSize: '12px', color: '#9290B0', marginTop: '2px' }}>📍 {p.location || p.region || 'Belgique'}</div>
+                    <div style={{ fontSize: '12px', color: '#9290B0', marginTop: '2px' }}>📍 {p.location || p.region || t('common.belgium', lang)}</div>
                   </div>
                 </div>
 
@@ -174,9 +219,9 @@ export default function ExplorePage() {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid #E8E6FF' }}>
                   <div style={{ fontSize: '13px', background: '#EEF0FF', color: '#6C63FF', padding: '6px 14px', borderRadius: '20px', fontWeight: 700 }}>
-                    ⏱️ {p.credits} crédits
+                    ⏱️ {p.credits} {t('explore.credits', lang)}
                   </div>
-                  <button onClick={() => requestExchange(p.id)} className="btn-request">Demander →</button>
+                  <button onClick={() => requestExchange(p.id)} className="btn-request">{t('explore.request', lang)}</button>
                 </div>
               </div>
             ))}

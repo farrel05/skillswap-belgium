@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useLang } from '../LanguageContext';
 import { t } from '../i18n';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const CATEGORIES = {
   fr: ['Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching', 'Autre'],
@@ -142,7 +143,13 @@ function AuthForm() {
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', background: '#F8F7FF', overflowY: 'auto' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', background: '#F8F7FF', overflowY: 'auto', position: 'relative' }}>
+
+        {/* Language switcher */}
+        <div style={{ position: 'absolute', top: '24px', right: '32px' }}>
+          <LanguageSwitcher />
+        </div>
+
         <div style={{ width: '100%', maxWidth: '460px' }}>
           <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
 

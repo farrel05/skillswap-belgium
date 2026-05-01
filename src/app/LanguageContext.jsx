@@ -1,22 +1,26 @@
 'use client';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(
-    typeof window !== 'undefined'
-      ? localStorage.getItem('ss_lang') || 'fr'
-      : 'fr'
-  );
+  // Toujours démarrer en 'fr' côté serveur pour éviter l'hydration mismatch
+  const [lang, setLang] = useState('fr');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Lire localStorage uniquement côté client, après le montage
+    const saved = localStorage.getItem('ss_lang');
+    if (saved) setLang(saved);
+    setMounted(true);
+  }, []);
 
   const changeLang = (newLang) => {
     setLang(newLang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('ss_lang', newLang);
-    }
+    localStorage.setItem('ss_lang', newLang);
   };
 
+  // Pendant le SSR et le premier render client, on rend 'fr' — pas de mismatch
   return (
     <LanguageContext.Provider value={{ lang, changeLang }}>
       {children}

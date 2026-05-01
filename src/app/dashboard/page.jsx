@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useLang } from '../LanguageContext';
+import { t } from '../i18n';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const navStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -27,6 +30,7 @@ const navStyles = `
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { lang } = useLang();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [skills, setSkills] = useState([]);
@@ -50,14 +54,14 @@ export default function DashboardPage() {
 
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
 
-  const firstName = profile?.full_name?.split(' ')[0] || 'là';
+  const firstName = profile?.full_name?.split(' ')[0] || '';
   const initials = profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : user?.email?.[0]?.toUpperCase() || '?';
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
       <style>{navStyles}</style>
       <div style={{ width: '48px', height: '48px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>🔄</div>
-      <p style={{ color: '#9290B0', fontWeight: 500 }}>Chargement...</p>
+      <p style={{ color: '#9290B0', fontWeight: 500 }}>{t('common.loading', lang)}</p>
     </div>
   );
 
@@ -72,16 +76,22 @@ export default function DashboardPage() {
           <span style={{ fontWeight: 800, fontSize: '17px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SkillSwap</span>
         </Link>
         <div style={{ display: 'flex', gap: '28px' }}>
-          {[['/dashboard', '🏠 Dashboard', true], ['/explore', '🔍 Explorer', false], ['/profile', '👤 Profil', false], ['/exchanges', '🤝 Échanges', false]].map(([href, label, active]) => (
+          {[
+            ['/dashboard', t('nav.dashboard', lang), true],
+            ['/explore', t('nav.explore', lang), false],
+            ['/profile', t('nav.profile', lang), false],
+            ['/exchanges', t('nav.exchanges', lang), false],
+          ].map(([href, label, active]) => (
             <Link key={href} href={href} className={`nav-link ${active ? 'active' : ''}`}>{label}</Link>
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <LanguageSwitcher />
           <div style={{ background: '#EEF0FF', color: '#6C63FF', padding: '8px 18px', borderRadius: '20px', fontSize: '13px', fontWeight: 700, border: '1px solid #E8E6FF' }}>
-            ⏱️ {profile?.credits || 0} crédits
+            ⏱️ {profile?.credits || 0} {t('explore.credits', lang)}
           </div>
           <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '13px' }}>{initials}</div>
-          <button onClick={handleLogout} className="logout-btn">↩ Déco</button>
+          <button onClick={handleLogout} className="logout-btn">↩ {t('nav.logout', lang)}</button>
         </div>
       </nav>
 
@@ -91,22 +101,22 @@ export default function DashboardPage() {
         <div style={{ marginBottom: '36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#1A1635', marginBottom: '4px', letterSpacing: '-0.5px' }}>
-              Bonjour {firstName} 👋
+              {t('dashboard.hello', lang)} {firstName} 👋
             </h1>
-            <p style={{ color: '#9290B0', fontSize: '14px' }}>Voici votre tableau de bord SkillSwap Belgium</p>
+            <p style={{ color: '#9290B0', fontSize: '14px' }}>{t('dashboard.subtitle', lang)}</p>
           </div>
           <Link href="/profile" style={{ padding: '11px 24px', borderRadius: '12px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700, boxShadow: '0 4px 14px rgba(108,99,255,0.4)' }}>
-            + Ajouter une compétence
+            {t('dashboard.addSkill', lang)}
           </Link>
         </div>
 
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
           {[
-            { icon: '⏱️', label: 'Crédits disponibles', value: profile?.credits || 0, sub: 'Utilisables pour des échanges', accent: true },
-            { icon: '🎯', label: 'Compétences offertes', value: skills.length, sub: 'Visible par la communauté', accent: false },
-            { icon: '🤝', label: 'Échanges réalisés', value: 0, sub: 'Ce mois-ci', accent: false },
-            { icon: '⭐', label: 'Note moyenne', value: '—', sub: 'Sur 5 étoiles', accent: false },
+            { icon: '⏱️', label: t('dashboard.credits', lang), value: profile?.credits || 0, sub: t('dashboard.creditsUsable', lang), accent: true },
+            { icon: '🎯', label: t('dashboard.skillsOffered', lang), value: skills.length, sub: t('dashboard.skillsVisible', lang), accent: false },
+            { icon: '🤝', label: t('dashboard.exchanges', lang), value: 0, sub: t('dashboard.thisMonth', lang), accent: false },
+            { icon: '⭐', label: t('dashboard.rating', lang), value: '—', sub: t('dashboard.outOf5', lang), accent: false },
           ].map((kpi, i) => (
             <div key={i} className={`kpi-card ${kpi.accent ? 'accent' : ''}`}>
               <div style={{ fontSize: '28px', marginBottom: '12px' }}>{kpi.icon}</div>
@@ -121,12 +131,12 @@ export default function DashboardPage() {
 
           {/* Actions rapides */}
           <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635', marginBottom: '20px' }}>⚡ Actions rapides</h2>
+            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635', marginBottom: '20px' }}>{t('dashboard.quickActions', lang)}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                { href: '/profile', icon: '➕', label: 'Ajouter une compétence', color: '#EEF0FF', iconColor: '#6C63FF' },
-                { href: '/explore', icon: '🔍', label: 'Trouver un profil compatible', color: '#F0FDF4', iconColor: '#10B981' },
-                { href: '/exchanges', icon: '🤝', label: 'Voir mes échanges', color: '#FFF7ED', iconColor: '#F59E0B' },
+                { href: '/profile', icon: '➕', label: t('dashboard.addSkillAction', lang), color: '#EEF0FF' },
+                { href: '/explore', icon: '🔍', label: t('dashboard.findProfile', lang), color: '#F0FDF4' },
+                { href: '/exchanges', icon: '🤝', label: t('dashboard.myExchanges', lang), color: '#FFF7ED' },
               ].map((action, i) => (
                 <Link key={i} href={action.href} className="action-card">
                   <div className="action-icon" style={{ background: action.color }}>
@@ -142,13 +152,13 @@ export default function DashboardPage() {
           {/* Profils suggérés */}
           <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635' }}>💡 Profils suggérés</h2>
-              <Link href="/explore" style={{ fontSize: '13px', color: '#6C63FF', textDecoration: 'none', fontWeight: 600 }}>Voir tout →</Link>
+              <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635' }}>{t('dashboard.suggested', lang)}</h2>
+              <Link href="/explore" style={{ fontSize: '13px', color: '#6C63FF', textDecoration: 'none', fontWeight: 600 }}>{t('dashboard.seeAll', lang)}</Link>
             </div>
             {matches.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 20px' }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>👥</div>
-                <p style={{ fontSize: '14px', color: '#9290B0' }}>Aucun profil pour l'instant</p>
+                <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('dashboard.noProfiles', lang)}</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -161,7 +171,7 @@ export default function DashboardPage() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1635', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.full_name || 'Anonyme'}</div>
-                        <div style={{ fontSize: '12px', color: '#9290B0' }}>{m.region || 'Belgique'}</div>
+                        <div style={{ fontSize: '12px', color: '#9290B0' }}>{m.region || t('common.belgium', lang)}</div>
                       </div>
                       <div style={{ fontSize: '12px', background: '#EEF0FF', color: '#6C63FF', padding: '4px 12px', borderRadius: '20px', fontWeight: 700, flexShrink: 0 }}>⏱️ {m.credits}</div>
                     </div>
@@ -175,15 +185,15 @@ export default function DashboardPage() {
         {/* Mes compétences */}
         <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635' }}>🎯 Mes compétences offertes</h2>
-            <Link href="/profile" style={{ padding: '8px 18px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>+ Ajouter</Link>
+            <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#1A1635' }}>{t('dashboard.mySkills', lang)}</h2>
+            <Link href="/profile" style={{ padding: '8px 18px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>{t('dashboard.addSkill', lang)}</Link>
           </div>
           {skills.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 20px' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</div>
-              <p style={{ fontSize: '16px', fontWeight: 700, color: '#1A1635', marginBottom: '8px' }}>Aucune compétence ajoutée</p>
-              <p style={{ fontSize: '14px', color: '#9290B0', marginBottom: '20px' }}>Ajoutez vos compétences pour être visible par la communauté</p>
-              <Link href="/profile" style={{ padding: '11px 28px', borderRadius: '12px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>Ajouter ma première compétence →</Link>
+              <p style={{ fontSize: '16px', fontWeight: 700, color: '#1A1635', marginBottom: '8px' }}>{t('dashboard.noSkills', lang)}</p>
+              <p style={{ fontSize: '14px', color: '#9290B0', marginBottom: '20px' }}>{t('profile.noSkills', lang)}</p>
+              <Link href="/profile" style={{ padding: '11px 28px', borderRadius: '12px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>{t('dashboard.addFirstSkill', lang)}</Link>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
