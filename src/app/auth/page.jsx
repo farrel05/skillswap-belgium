@@ -6,6 +6,34 @@ import { supabase } from '@/lib/supabase';
 const CATEGORIES = ['Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching', 'Autre'];
 const REGIONS = ['Bruxelles', 'Wallonie', 'Flandre'];
 
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  :root {
+    --p: #6C63FF; --p2: #4F46E5; --pl: #EEF0FF;
+    --s: #EC4899; --a: #10B981;
+    --b: #E8E6FF; --t1: #1A1635; --t2: #4B4869; --t3: #9290B0;
+  }
+  .auth-input {
+    width: 100%; padding: 12px 16px; border-radius: 12px;
+    border: 1.5px solid var(--b); font-size: 14px;
+    outline: none; font-family: inherit; background: #F8F7FF;
+    color: var(--t1); transition: all 0.2s;
+  }
+  .auth-input:focus { border-color: var(--p); background: white; box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
+  .auth-input::placeholder { color: var(--t3); }
+  .tab-btn { flex: 1; padding: 14px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .opt-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; border: 1.5px solid var(--b); background: white; color: var(--t2); cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; }
+  .opt-btn:hover { border-color: var(--p); color: var(--p); }
+  .opt-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: 700; }
+  .submit-btn { width: 100%; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, var(--p), var(--p2)); color: white; border: none; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(108,99,255,0.4); transition: all 0.2s; }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(108,99,255,0.5); }
+  .submit-btn:disabled { background: #E8E6FF; color: var(--t3); box-shadow: none; cursor: not-allowed; }
+  .feature-item { display: flex; gap: 14px; align-items: flex-start; }
+  .feature-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+`;
+
 function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,15 +41,9 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [form, setForm] = useState({
-    email: '', password: '', fullName: '', bio: '',
-    region: '', category: '', location: ''
-  });
+  const [form, setForm] = useState({ email: '', password: '', fullName: '', bio: '', region: '', category: '', location: '' });
 
-  const handleChange = (field, value) => {
-    setForm(f => ({ ...f, [field]: value }));
-    setError('');
-  };
+  const set = (field, value) => { setForm(f => ({ ...f, [field]: value })); setError(''); };
 
   const handleLogin = async () => {
     if (!form.email || !form.password) { setError('Email et mot de passe requis.'); return; }
@@ -36,144 +58,137 @@ function AuthForm() {
     if (!form.email || !form.password || !form.fullName) { setError('Champs obligatoires manquants.'); return; }
     if (form.password.length < 6) { setError('Mot de passe minimum 6 caractères.'); return; }
     setLoading(true);
-
-    const { data, error } = await supabase.auth.signUp({
-      email: form.email, password: form.password,
-      options: { data: { full_name: form.fullName } }
-    });
-
+    const { data, error } = await supabase.auth.signUp({ email: form.email, password: form.password, options: { data: { full_name: form.fullName } } });
     if (error) { setError(error.message); }
     else if (data.user) {
-      await supabase.from('skillswap_profiles').insert({
-        id: data.user.id, email: form.email,
-        full_name: form.fullName, bio: form.bio,
-        region: form.region, location: form.location,
-        credits: 5
-      });
-      setSuccess('Compte créé ! 5 crédits offerts 🎉 Vérifiez votre email.');
+      await supabase.from('skillswap_profiles').insert({ id: data.user.id, email: form.email, full_name: form.fullName, bio: form.bio, region: form.region, location: form.location, credits: 5 });
+      setSuccess('Compte créé avec succès ! 5 crédits offerts 🎉 Vérifiez votre email pour confirmer.');
     }
     setLoading(false);
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <style>{styles}</style>
+
       {/* Left panel */}
-      <div style={{
-        width: '420px', background: 'var(--primary)',
-        padding: '48px 40px', display: 'flex', flexDirection: 'column',
-        gap: '32px', flexShrink: 0,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.2)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🔄</div>
-          <div>
-            <div style={{ fontWeight: '700', fontSize: '18px', color: 'white' }}>SkillSwap</div>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Belgium</div>
-          </div>
-        </div>
+      <div style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
 
-        <div>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'white', marginBottom: '12px' }}>
-            Échangez vos compétences
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '64px' }}>
+            <div style={{ width: '42px', height: '42px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🔄</div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '20px', color: 'white' }}>SkillSwap</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Belgium</div>
+            </div>
+          </div>
+
+          <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '16px', lineHeight: 1.2, letterSpacing: '-0.5px' }}>
+            Échangez vos compétences, gratuitement
           </h2>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.7' }}>
-            Rejoignez la communauté de professionnels belges qui échangent leurs talents.
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: '48px' }}>
+            Rejoignez des milliers de professionnels belges qui échangent leurs talents sans débourser un centime.
           </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {[
+              { icon: '🎁', title: '5 crédits offerts', desc: 'Commencez à échanger immédiatement' },
+              { icon: '🔒', title: 'Profils vérifiés', desc: 'Communauté sécurisée et de confiance' },
+              { icon: '🇧🇪', title: 'Réseau 100% belge', desc: 'FR · NL · EN — 3 régions couvertes' },
+              { icon: '⭐', title: 'Évaluations transparentes', desc: 'Système de réputation vérifié' },
+            ].map((item, i) => (
+              <div key={i} className="feature-item">
+                <div className="feature-icon">{item.icon}</div>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'white', marginBottom: '2px' }}>{item.title}</div>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {[
-          { icon: '🎁', text: '5 crédits offerts à l\'inscription' },
-          { icon: '🔒', text: 'Profils vérifiés et sécurisés' },
-          { icon: '🇧🇪', text: 'Réseau 100% belge — FR/NL/EN' },
-          { icon: '⭐', text: 'Système d\'évaluations transparent' },
-        ].map((item, i) => (
-          <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '16px' }}>
-            <span style={{ fontSize: '20px' }}>{item.icon}</span>
-            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)' }}>{item.text}</span>
-          </div>
-        ))}
+        <div style={{ position: 'relative', zIndex: 1, paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>🇧🇪 © 2026 SkillSwap Belgium</p>
+        </div>
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', overflowY: 'auto' }}>
-        <div style={{ width: '100%', maxWidth: '440px', background: 'white', borderRadius: '20px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', background: '#F8F7FF', overflowY: 'auto' }}>
+        <div style={{ width: '100%', maxWidth: '460px' }}>
 
-          {/* Tabs */}
-          <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
-            {['login', 'register'].map(m => (
-              <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }}
-                style={{
-                  flex: 1, padding: '16px', fontSize: '14px', fontWeight: '500',
-                  border: 'none', background: mode === m ? 'var(--primary-light)' : 'white',
-                  color: mode === m ? 'var(--primary)' : 'var(--text-3)',
-                  borderBottom: mode === m ? '2px solid var(--primary)' : 'none',
-                  cursor: 'pointer',
-                }}>
-                {m === 'login' ? 'Connexion' : 'Créer un compte'}
-              </button>
-            ))}
-          </div>
+          {/* Card */}
+          <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
 
-          <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {mode === 'login' ? (
-              <>
-                <h2 style={{ fontSize: '20px', fontWeight: '700' }}>Bon retour 👋</h2>
-                <Field label="Email" type="email" value={form.email} onChange={v => handleChange('email', v)} placeholder="vous@exemple.com" />
-                <Field label="Mot de passe" type="password" value={form.password} onChange={v => handleChange('password', v)} placeholder="••••••••" onEnter={handleLogin} />
-                {error && <ErrorMsg msg={error} />}
-                <SubmitBtn onClick={handleLogin} loading={loading} label="Se connecter →" />
-                <p style={{ fontSize: '13px', color: 'var(--text-3)', textAlign: 'center' }}>
-                  Pas de compte ? <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: '500' }} onClick={() => setMode('register')}>Créer un compte gratuit</span>
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 style={{ fontSize: '20px', fontWeight: '700' }}>Créer votre compte 🚀</h2>
-                <p style={{ fontSize: '13px', color: 'var(--text-3)', marginTop: '-8px' }}>5 crédits offerts à l'inscription !</p>
-                <Field label="Nom complet *" value={form.fullName} onChange={v => handleChange('fullName', v)} placeholder="Jean Dupont" />
-                <Field label="Email *" type="email" value={form.email} onChange={v => handleChange('email', v)} placeholder="vous@exemple.com" />
-                <Field label="Mot de passe * (min. 6 car.)" type="password" value={form.password} onChange={v => handleChange('password', v)} placeholder="••••••••" />
-                <Field label="Ville" value={form.location} onChange={v => handleChange('location', v)} placeholder="Bruxelles, Liège..." />
+            {/* Tabs */}
+            <div style={{ display: 'flex', borderBottom: '1px solid #E8E6FF' }}>
+              {[['login', 'Connexion'], ['register', 'Créer un compte']].map(([m, label]) => (
+                <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }} className="tab-btn"
+                  style={{ background: mode === m ? '#EEF0FF' : 'white', color: mode === m ? '#6C63FF' : '#9290B0', borderBottom: mode === m ? '2px solid #6C63FF' : 'none' }}>
+                  {label}
+                </button>
+              ))}
+            </div>
 
-                <div>
-                  <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-2)', display: 'block', marginBottom: '8px' }}>Région</label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    {REGIONS.map(r => (
-                      <button key={r} onClick={() => handleChange('region', r)}
-                        style={{
-                          flex: 1, padding: '8px', borderRadius: '8px', fontSize: '12px',
-                          border: `1.5px solid ${form.region === r ? 'var(--primary)' : 'var(--border)'}`,
-                          background: form.region === r ? 'var(--primary)' : 'white',
-                          color: form.region === r ? 'white' : 'var(--text-2)',
-                          cursor: 'pointer', fontWeight: '500',
-                        }}>{r}</button>
-                    ))}
+            <div style={{ padding: '32px' }}>
+              {mode === 'login' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div>
+                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>Bon retour 👋</h2>
+                    <p style={{ fontSize: '14px', color: '#9290B0' }}>Connectez-vous à votre espace SkillSwap</p>
                   </div>
+                  <Field label="Email" type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                  <Field label="Mot de passe" type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
+                  {error && <ErrorMsg msg={error} />}
+                  <button onClick={handleLogin} disabled={loading} className="submit-btn">{loading ? '⏳ Connexion...' : 'Se connecter →'}</button>
+                  <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+                    Pas de compte ?{' '}
+                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>Créer un compte gratuit</span>
+                  </p>
                 </div>
-
-                <div>
-                  <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-2)', display: 'block', marginBottom: '8px' }}>Votre principale compétence</label>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {CATEGORIES.map(c => (
-                      <button key={c} onClick={() => handleChange('category', c)}
-                        style={{
-                          padding: '6px 12px', borderRadius: '20px', fontSize: '12px',
-                          border: `1.5px solid ${form.category === c ? 'var(--primary)' : 'var(--border)'}`,
-                          background: form.category === c ? 'var(--primary)' : 'white',
-                          color: form.category === c ? 'white' : 'var(--text-2)',
-                          cursor: 'pointer',
-                        }}>{c}</button>
-                    ))}
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  <div>
+                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>Créer votre compte 🚀</h2>
+                    <p style={{ fontSize: '14px', color: '#9290B0' }}>5 crédits offerts à l'inscription !</p>
                   </div>
-                </div>
+                  <Field label="Nom complet *" value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
+                  <Field label="Email *" type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                  <Field label="Mot de passe * (min. 6 caractères)" type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
+                  <Field label="Ville" value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
 
-                {error && <ErrorMsg msg={error} />}
-                {success && <div style={{ background: '#D1FAE5', color: '#065F46', padding: '10px 14px', borderRadius: '8px', fontSize: '13px' }}>✅ {success}</div>}
-                <SubmitBtn onClick={handleRegister} loading={loading} label="Créer mon compte gratuit →" />
-                <p style={{ fontSize: '13px', color: 'var(--text-3)', textAlign: 'center' }}>
-                  Déjà un compte ? <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: '500' }} onClick={() => setMode('login')}>Se connecter</span>
-                </p>
-              </>
-            )}
+                  <div>
+                    <Label text="Votre région" />
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      {REGIONS.map(r => (
+                        <button key={r} onClick={() => set('region', r)} className={`opt-btn ${form.region === r ? 'active' : ''}`}>
+                          {r === 'Bruxelles' ? '🏙️' : r === 'Wallonie' ? '🌿' : '🌊'} {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label text="Votre principale compétence" />
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                      {CATEGORIES.map(c => (
+                        <button key={c} onClick={() => set('category', c)} className={`opt-btn ${form.category === c ? 'active' : ''}`}>{c}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {error && <ErrorMsg msg={error} />}
+                  {success && <SuccessMsg msg={success} />}
+                  <button onClick={handleRegister} disabled={loading} className="submit-btn">{loading ? '⏳ Création...' : 'Créer mon compte gratuit →'}</button>
+                  <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+                    Déjà un compte ?{' '}
+                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>Se connecter</span>
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -181,48 +196,25 @@ function AuthForm() {
   );
 }
 
-function Field({ label, type = 'text', value, onChange, placeholder, onEnter }) {
-  return (
-    <div>
-      <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-2)', display: 'block', marginBottom: '6px' }}>{label}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        onKeyDown={e => e.key === 'Enter' && onEnter && onEnter()}
-        style={{
-          width: '100%', padding: '10px 14px', borderRadius: '10px',
-          border: '1.5px solid var(--border)', fontSize: '14px',
-          outline: 'none', fontFamily: 'inherit', background: 'var(--bg)',
-          color: 'var(--text-1)',
-        }} />
-    </div>
-  );
-}
+const Label = ({ text }) => <label style={{ fontSize: '13px', fontWeight: 600, color: '#4B4869', display: 'block' }}>{text}</label>;
 
-function ErrorMsg({ msg }) {
-  return <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px 14px', borderRadius: '8px', fontSize: '13px' }}>⚠️ {msg}</div>;
-}
+const Field = ({ label, type = 'text', value, onChange, placeholder, onEnter }) => (
+  <div>
+    <Label text={label} />
+    <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      onKeyDown={e => e.key === 'Enter' && onEnter?.()}
+      className="auth-input" style={{ marginTop: '8px' }} />
+  </div>
+);
 
-function SubmitBtn({ onClick, loading, label }) {
-  return (
-    <button onClick={onClick} disabled={loading}
-      style={{
-        width: '100%', padding: '13px', borderRadius: '12px',
-        background: loading ? 'var(--border)' : 'var(--primary)',
-        color: loading ? 'var(--text-3)' : 'white',
-        border: 'none', fontWeight: '700', fontSize: '15px',
-        cursor: loading ? 'not-allowed' : 'pointer',
-        boxShadow: loading ? 'none' : '0 4px 14px rgba(108,99,255,0.3)',
-        fontFamily: 'inherit',
-      }}>
-      {loading ? '⏳ Chargement...' : label}
-    </button>
-  );
-}
+const ErrorMsg = ({ msg }) => (
+  <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 500 }}>⚠️ {msg}</div>
+);
+
+const SuccessMsg = ({ msg }) => (
+  <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#166534', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 500 }}>✅ {msg}</div>
+);
 
 export default function AuthPage() {
-  return (
-    <Suspense fallback={<div>Chargement...</div>}>
-      <AuthForm />
-    </Suspense>
-  );
+  return <Suspense fallback={<div>Chargement...</div>}><AuthForm /></Suspense>;
 }

@@ -6,6 +6,35 @@ import { supabase } from '@/lib/supabase';
 
 const CATEGORIES = ['Tous', 'Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching'];
 const REGIONS = ['Toutes', 'Bruxelles', 'Wallonie', 'Flandre'];
+const AVATAR_COLORS = [
+  'linear-gradient(135deg,#6C63FF,#EC4899)',
+  'linear-gradient(135deg,#10B981,#3B82F6)',
+  'linear-gradient(135deg,#F59E0B,#EF4444)',
+  'linear-gradient(135deg,#8B5CF6,#06B6D4)',
+  'linear-gradient(135deg,#EC4899,#F97316)',
+];
+
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #F8F7FF; }
+  :root { --p:#6C63FF;--p2:#4F46E5;--pl:#EEF0FF;--s:#EC4899;--b:#E8E6FF;--t1:#1A1635;--t2:#4B4869;--t3:#9290B0; }
+  .nav-link { font-size: 13px; color: var(--t2); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+  .nav-link:hover,.nav-link.active { color: var(--p); font-weight: 700; }
+  .filter-btn { padding: 7px 16px; border-radius: 20px; font-size: 12px; border: 1.5px solid var(--b); background: white; color: var(--t2); cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; }
+  .filter-btn:hover { border-color: var(--p); color: var(--p); }
+  .filter-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: 700; box-shadow: 0 4px 12px rgba(108,99,255,0.3); }
+  .profile-card { background: white; border: 1px solid var(--b); border-radius: 20px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+  .profile-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--p), var(--s)); opacity: 0; transition: opacity 0.3s; }
+  .profile-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(108,99,255,0.12); }
+  .profile-card:hover::before { opacity: 1; }
+  .skill-tag { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+  .btn-request { padding: 9px 20px; border-radius: 10px; background: linear-gradient(135deg, var(--p), var(--p2)); color: white; border: none; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .btn-request:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(108,99,255,0.4); }
+  .search-input { width: 100%; padding: 14px 20px 14px 48px; border-radius: 14px; border: 1.5px solid var(--b); font-size: 14px; outline: none; font-family: inherit; background: white; color: var(--t1); transition: all 0.2s; }
+  .search-input:focus { border-color: var(--p); box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
+  .search-input::placeholder { color: var(--t3); }
+`;
 
 export default function ExplorePage() {
   const router = useRouter();
@@ -17,23 +46,13 @@ export default function ExplorePage() {
   const [region, setRegion] = useState('Toutes');
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
-    loadProfiles();
-  }, []);
-
-  useEffect(() => {
-    filterProfiles();
-  }, [search, category, region, profiles]);
+  useEffect(() => { loadProfiles(); }, []);
+  useEffect(() => { filterProfiles(); }, [search, category, region, profiles]);
 
   const loadProfiles = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setCurrentUser(user);
-
-    const { data } = await supabase
-      .from('skillswap_profiles')
-      .select('*, skills_offered(*)')
-      .order('created_at', { ascending: false });
-
+    const { data } = await supabase.from('skillswap_profiles').select('*, skills_offered(*)').order('created_at', { ascending: false });
     setProfiles(data || []);
     setFiltered(data || []);
     setLoading(false);
@@ -42,143 +61,122 @@ export default function ExplorePage() {
   const filterProfiles = () => {
     let result = [...profiles];
     if (currentUser) result = result.filter(p => p.id !== currentUser.id);
-    if (search) result = result.filter(p =>
-      p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.bio?.toLowerCase().includes(search.toLowerCase()) ||
-      p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase()))
-    );
+    if (search) result = result.filter(p => p.full_name?.toLowerCase().includes(search.toLowerCase()) || p.bio?.toLowerCase().includes(search.toLowerCase()) || p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase())));
     if (region !== 'Toutes') result = result.filter(p => p.region === region);
-    if (category !== 'Tous') result = result.filter(p =>
-      p.skills_offered?.some(s => s.category === category)
-    );
+    if (category !== 'Tous') result = result.filter(p => p.skills_offered?.some(s => s.category === category));
     setFiltered(result);
   };
 
   const requestExchange = async (providerId) => {
     if (!currentUser) { router.push('/auth'); return; }
-    const { error } = await supabase.from('exchanges').insert({
-      requester_id: currentUser.id,
-      provider_id: providerId,
-      hours: 1,
-      status: 'pending',
-      message: 'Bonjour, je souhaite échanger nos compétences !'
-    });
+    const { error } = await supabase.from('exchanges').insert({ requester_id: currentUser.id, provider_id: providerId, hours: 1, status: 'pending', message: 'Bonjour, je souhaite échanger nos compétences !' });
     if (!error) alert('Demande d\'échange envoyée ! ✅');
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: '#F8F7FF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+      <style>{styles}</style>
+
       {/* Navbar */}
-      <nav style={{ background: 'white', borderBottom: '1px solid var(--border)', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-          <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>🔄</div>
-          <span style={{ fontWeight: '700', color: 'var(--text-1)' }}>SkillSwap</span>
+      <nav style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🔄</div>
+          <span style={{ fontWeight: 800, fontSize: '17px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SkillSwap</span>
         </Link>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          {[['/dashboard', '🏠 Dashboard'], ['/explore', '🔍 Explorer'], ['/profile', '👤 Profil'], ['/exchanges', '🤝 Échanges']].map(([href, label]) => (
-            <Link key={href} href={href} style={{ fontSize: '13px', color: href === '/explore' ? 'var(--primary)' : 'var(--text-2)', textDecoration: 'none', fontWeight: href === '/explore' ? '600' : '400' }}>{label}</Link>
+        <div style={{ display: 'flex', gap: '28px' }}>
+          {[['/dashboard','🏠 Dashboard',false],['/explore','🔍 Explorer',true],['/profile','👤 Profil',false],['/exchanges','🤝 Échanges',false]].map(([href,label,active]) => (
+            <Link key={href} href={href} className={`nav-link ${active?'active':''}`}>{label}</Link>
           ))}
         </div>
         {currentUser ? (
-          <Link href="/profile" style={{ fontSize: '13px', color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>Mon profil →</Link>
+          <Link href="/profile" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>Mon profil →</Link>
         ) : (
-          <Link href="/auth" style={{ padding: '8px 20px', borderRadius: '10px', background: 'var(--primary)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}>Se connecter</Link>
+          <Link href="/auth" style={{ padding: '9px 20px', borderRadius: '10px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '13px', fontWeight: 700 }}>Se connecter</Link>
         )}
       </nav>
 
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
-        <div style={{ marginBottom: '28px' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '4px' }}>🔍 Explorer les profils</h1>
-          <p style={{ color: 'var(--text-3)', fontSize: '14px' }}>{filtered.length} profil{filtered.length > 1 ? 's' : ''} disponible{filtered.length > 1 ? 's' : ''}</p>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 32px' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: '36px' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#1A1635', marginBottom: '6px', letterSpacing: '-0.5px' }}>🔍 Explorer les profils</h1>
+          <p style={{ color: '#9290B0', fontSize: '14px' }}>{filtered.length} profil{filtered.length > 1 ? 's' : ''} disponible{filtered.length > 1 ? 's' : ''} en Belgique</p>
         </div>
 
-        {/* Filtres */}
-        <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '14px', padding: '20px', marginBottom: '24px' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="🔍 Rechercher une compétence, un nom..."
-            style={{ width: '100%', padding: '11px 16px', borderRadius: '10px', border: '1.5px solid var(--border)', fontSize: '14px', outline: 'none', fontFamily: 'inherit', marginBottom: '16px' }} />
-
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+        {/* Filters */}
+        <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 20px rgba(108,99,255,0.06)' }}>
+          <div style={{ position: 'relative', marginBottom: '20px' }}>
+            <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '18px' }}>🔍</span>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher une compétence, un nom, une ville..." className="search-input" />
+          </div>
+          <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-3)', marginBottom: '8px', fontWeight: '500' }}>RÉGION</div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {REGIONS.map(r => (
-                  <button key={r} onClick={() => setRegion(r)}
-                    style={{ padding: '6px 14px', borderRadius: '20px', fontSize: '12px', border: `1.5px solid ${region === r ? 'var(--primary)' : 'var(--border)'}`, background: region === r ? 'var(--primary)' : 'white', color: region === r ? 'white' : 'var(--text-2)', cursor: 'pointer', fontWeight: '500' }}>
-                    {r}
-                  </button>
-                ))}
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>RÉGION</div>
+              <div style={{ display: 'flex', gap: '7px' }}>
+                {REGIONS.map(r => <button key={r} onClick={() => setRegion(r)} className={`filter-btn ${region === r ? 'active' : ''}`}>{r}</button>)}
               </div>
             </div>
-
             <div>
-              <div style={{ fontSize: '12px', color: 'var(--text-3)', marginBottom: '8px', fontWeight: '500' }}>COMPÉTENCE</div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {CATEGORIES.map(c => (
-                  <button key={c} onClick={() => setCategory(c)}
-                    style={{ padding: '6px 14px', borderRadius: '20px', fontSize: '12px', border: `1.5px solid ${category === c ? 'var(--primary)' : 'var(--border)'}`, background: category === c ? 'var(--primary)' : 'white', color: category === c ? 'white' : 'var(--text-2)', cursor: 'pointer' }}>
-                    {c}
-                  </button>
-                ))}
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9290B0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>COMPÉTENCE</div>
+              <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap' }}>
+                {CATEGORIES.map(c => <button key={c} onClick={() => setCategory(c)} className={`filter-btn ${category === c ? 'active' : ''}`}>{c}</button>)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Grille de profils */}
+        {/* Grid */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-3)' }}>Chargement...</div>
+          <div style={{ textAlign: 'center', padding: '80px', color: '#9290B0' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>⏳</div>
+            <p>Chargement des profils...</p>
+          </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-3)' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>👥</div>
-            <p style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Aucun profil trouvé</p>
-            <p style={{ fontSize: '14px' }}>Essayez d'autres filtres</p>
+          <div style={{ textAlign: 'center', padding: '80px', background: 'white', borderRadius: '20px', border: '1px solid #E8E6FF' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>👥</div>
+            <p style={{ fontSize: '18px', fontWeight: 700, color: '#1A1635', marginBottom: '8px' }}>Aucun profil trouvé</p>
+            <p style={{ fontSize: '14px', color: '#9290B0' }}>Essayez d'autres filtres ou élargissez votre recherche</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '22px' }}>
             {filtered.map((p, i) => (
-              <div key={i} style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '16px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', transition: 'transform 0.2s' }}>
-                {/* Avatar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '700', flexShrink: 0 }}>
+              <div key={i} className="profile-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: AVATAR_COLORS[i % 5], color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '20px', flexShrink: 0 }}>
                     {p.full_name?.[0] || '?'}
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '15px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.full_name || 'Anonyme'}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-3)' }}>{p.location || p.region || 'Belgique'}</div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1A1635', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.full_name || 'Anonyme'}</div>
+                    <div style={{ fontSize: '12px', color: '#9290B0', marginTop: '2px' }}>📍 {p.location || p.region || 'Belgique'}</div>
                   </div>
                 </div>
 
-                {/* Bio */}
                 {p.bio && (
-                  <p style={{ fontSize: '13px', color: 'var(--text-2)', lineHeight: '1.6', marginBottom: '14px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ fontSize: '13px', color: '#4B4869', lineHeight: 1.65, marginBottom: '14px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {p.bio}
                   </p>
                 )}
 
-                {/* Skills */}
                 {p.skills_offered?.length > 0 && (
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                    {p.skills_offered.slice(0, 3).map((s, j) => (
-                      <span key={j} style={{ fontSize: '11px', background: 'var(--primary-light)', color: 'var(--primary)', padding: '3px 10px', borderRadius: '10px', fontWeight: '500' }}>
-                        {s.title}
-                      </span>
-                    ))}
-                    {p.skills_offered.length > 3 && (
-                      <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>+{p.skills_offered.length - 3}</span>
-                    )}
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '18px' }}>
+                    {p.skills_offered.slice(0, 3).map((s, j) => {
+                      const tagStyles = [
+                        { bg: '#EEF0FF', color: '#4F46E5' },
+                        { bg: '#F0FDF4', color: '#166534' },
+                        { bg: '#FEF3C7', color: '#92400E' },
+                      ];
+                      const ts = tagStyles[j % 3];
+                      return <span key={j} className="skill-tag" style={{ background: ts.bg, color: ts.color }}>{s.title}</span>;
+                    })}
+                    {p.skills_offered.length > 3 && <span style={{ fontSize: '12px', color: '#9290B0', alignSelf: 'center' }}>+{p.skills_offered.length - 3}</span>}
                   </div>
                 )}
 
-                {/* Footer */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: '12px', background: 'var(--primary-light)', color: 'var(--primary)', padding: '4px 12px', borderRadius: '20px', fontWeight: '600' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid #E8E6FF' }}>
+                  <div style={{ fontSize: '13px', background: '#EEF0FF', color: '#6C63FF', padding: '6px 14px', borderRadius: '20px', fontWeight: 700 }}>
                     ⏱️ {p.credits} crédits
-                  </span>
-                  <button onClick={() => requestExchange(p.id)}
-                    style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--primary)', color: 'white', border: 'none', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    Demander →
-                  </button>
+                  </div>
+                  <button onClick={() => requestExchange(p.id)} className="btn-request">Demander →</button>
                 </div>
               </div>
             ))}
