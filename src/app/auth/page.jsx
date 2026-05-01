@@ -103,8 +103,8 @@ function AuthForm() {
     <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <style>{styles}</style>
 
-      {/* Left panel */}
-      <div style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      {/* Left panel - caché sur mobile */}
+      <div className="auth-left-panel" style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
         <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
 

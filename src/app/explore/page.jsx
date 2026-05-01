@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useLang } from '../LanguageContext';
 import { t } from '../i18n';
 import LanguageSwitcher from '../LanguageSwitcher';
+import MobileNav from '../MobileNav';
 
 const CATEGORIES_I18N = {
   fr: ['Tous', 'Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching'],
@@ -99,7 +100,7 @@ export default function ExplorePage() {
       <style>{styles}</style>
 
       {/* Navbar */}
-      <nav style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
+      <nav className="desktop-nav" style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🔄</div>
           <span style={{ fontWeight: 800, fontSize: '17px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SkillSwap</span>
@@ -127,6 +128,7 @@ export default function ExplorePage() {
         )}
       </nav>
 
+      <MobileNav active="/explore" />
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 32px' }}>
 
         {/* Header */}
