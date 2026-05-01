@@ -1,10 +1,37 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useLang } from '../LanguageContext';
+import { t } from '../i18n';
 
-const CATEGORIES = ['Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching', 'Autre'];
+const CATEGORIES = {
+  fr: ['Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching', 'Autre'],
+  nl: ['Tech / Dev', 'Design', 'Marketing', 'Schrijven', 'Boekhouding', 'Foto / Video', 'Talen', 'Coaching', 'Andere'],
+  en: ['Tech / Dev', 'Design', 'Marketing', 'Writing', 'Accounting', 'Photo / Video', 'Languages', 'Coaching', 'Other'],
+};
 const REGIONS = ['Bruxelles', 'Wallonie', 'Flandre'];
+
+const FEATURES = {
+  fr: [
+    { icon: '🎁', title: '5 crédits offerts', desc: 'Commencez à échanger immédiatement' },
+    { icon: '🔒', title: 'Profils vérifiés', desc: 'Communauté sécurisée et de confiance' },
+    { icon: '🇧🇪', title: 'Réseau 100% belge', desc: 'FR · NL · EN — 3 régions couvertes' },
+    { icon: '⭐', title: 'Évaluations transparentes', desc: 'Système de réputation vérifié' },
+  ],
+  nl: [
+    { icon: '🎁', title: '5 credits gratis', desc: 'Begin meteen met uitwisselen' },
+    { icon: '🔒', title: 'Geverifieerde profielen', desc: 'Veilige en betrouwbare community' },
+    { icon: '🇧🇪', title: '100% Belgisch netwerk', desc: 'FR · NL · EN — 3 regio\'s gedekt' },
+    { icon: '⭐', title: 'Transparante beoordelingen', desc: 'Geverifieerd reputatiesysteem' },
+  ],
+  en: [
+    { icon: '🎁', title: '5 free credits', desc: 'Start exchanging immediately' },
+    { icon: '🔒', title: 'Verified profiles', desc: 'Safe and trusted community' },
+    { icon: '🇧🇪', title: '100% Belgian network', desc: 'FR · NL · EN — 3 regions covered' },
+    { icon: '⭐', title: 'Transparent reviews', desc: 'Verified reputation system' },
+  ],
+};
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -37,6 +64,7 @@ const styles = `
 function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { lang } = useLang();
   const [mode, setMode] = useState(searchParams.get('mode') === 'register' ? 'register' : 'login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,26 +74,29 @@ function AuthForm() {
   const set = (field, value) => { setForm(f => ({ ...f, [field]: value })); setError(''); };
 
   const handleLogin = async () => {
-    if (!form.email || !form.password) { setError('Email et mot de passe requis.'); return; }
+    if (!form.email || !form.password) { setError(t('auth.missingFields', lang)); return; }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password });
-    if (error) setError('Email ou mot de passe incorrect.');
+    if (error) setError(t('auth.wrongCredentials', lang));
     else router.push('/dashboard');
     setLoading(false);
   };
 
   const handleRegister = async () => {
-    if (!form.email || !form.password || !form.fullName) { setError('Champs obligatoires manquants.'); return; }
-    if (form.password.length < 6) { setError('Mot de passe minimum 6 caractères.'); return; }
+    if (!form.email || !form.password || !form.fullName) { setError(t('auth.missingFields', lang)); return; }
+    if (form.password.length < 6) { setError(t('auth.minPassword', lang)); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({ email: form.email, password: form.password, options: { data: { full_name: form.fullName } } });
     if (error) { setError(error.message); }
     else if (data.user) {
       await supabase.from('skillswap_profiles').insert({ id: data.user.id, email: form.email, full_name: form.fullName, bio: form.bio, region: form.region, location: form.location, credits: 5 });
-      setSuccess('Compte créé avec succès ! 5 crédits offerts 🎉 Vérifiez votre email pour confirmer.');
+      setSuccess(t('auth.successRegister', lang));
     }
     setLoading(false);
   };
+
+  const features = FEATURES[lang] || FEATURES.fr;
+  const categories = CATEGORIES[lang] || CATEGORIES.fr;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -86,19 +117,14 @@ function AuthForm() {
           </div>
 
           <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '16px', lineHeight: 1.2, letterSpacing: '-0.5px' }}>
-            Échangez vos compétences, gratuitement
+            {t('home.title1', lang)}<br />{t('home.title2', lang)}
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: '48px' }}>
-            Rejoignez des milliers de professionnels belges qui échangent leurs talents sans débourser un centime.
+            {t('home.subtitle', lang)}
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {[
-              { icon: '🎁', title: '5 crédits offerts', desc: 'Commencez à échanger immédiatement' },
-              { icon: '🔒', title: 'Profils vérifiés', desc: 'Communauté sécurisée et de confiance' },
-              { icon: '🇧🇪', title: 'Réseau 100% belge', desc: 'FR · NL · EN — 3 régions couvertes' },
-              { icon: '⭐', title: 'Évaluations transparentes', desc: 'Système de réputation vérifié' },
-            ].map((item, i) => (
+            {features.map((item, i) => (
               <div key={i} className="feature-item">
                 <div className="feature-icon">{item.icon}</div>
                 <div>
@@ -118,13 +144,11 @@ function AuthForm() {
       {/* Right panel */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', background: '#F8F7FF', overflowY: 'auto' }}>
         <div style={{ width: '100%', maxWidth: '460px' }}>
-
-          {/* Card */}
           <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
 
             {/* Tabs */}
             <div style={{ display: 'flex', borderBottom: '1px solid #E8E6FF' }}>
-              {[['login', 'Connexion'], ['register', 'Créer un compte']].map(([m, label]) => (
+              {[['login', t('auth.login', lang)], ['register', t('auth.register', lang)]].map(([m, label]) => (
                 <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }} className="tab-btn"
                   style={{ background: mode === m ? '#EEF0FF' : 'white', color: mode === m ? '#6C63FF' : '#9290B0', borderBottom: mode === m ? '2px solid #6C63FF' : 'none' }}>
                   {label}
@@ -136,31 +160,33 @@ function AuthForm() {
               {mode === 'login' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>Bon retour 👋</h2>
-                    <p style={{ fontSize: '14px', color: '#9290B0' }}>Connectez-vous à votre espace SkillSwap</p>
+                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>{t('auth.welcome', lang)}</h2>
+                    <p style={{ fontSize: '14px', color: '#9290B0' }}>SkillSwap Belgium</p>
                   </div>
-                  <Field label="Email" type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                  <Field label="Mot de passe" type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
+                  <Field label={t('auth.email', lang)} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                  <Field label={t('auth.password', lang)} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
                   {error && <ErrorMsg msg={error} />}
-                  <button onClick={handleLogin} disabled={loading} className="submit-btn">{loading ? '⏳ Connexion...' : 'Se connecter →'}</button>
+                  <button onClick={handleLogin} disabled={loading} className="submit-btn">
+                    {loading ? t('common.loading', lang) : t('auth.loginBtn', lang)}
+                  </button>
                   <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
-                    Pas de compte ?{' '}
-                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>Créer un compte gratuit</span>
+                    {t('auth.noAccount', lang)}{' '}
+                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>{t('auth.createFree', lang)}</span>
                   </p>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                   <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>Créer votre compte 🚀</h2>
-                    <p style={{ fontSize: '14px', color: '#9290B0' }}>5 crédits offerts à l'inscription !</p>
+                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>{t('auth.createAccount', lang)}</h2>
+                    <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('auth.free', lang)}</p>
                   </div>
-                  <Field label="Nom complet *" value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
-                  <Field label="Email *" type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                  <Field label="Mot de passe * (min. 6 caractères)" type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
-                  <Field label="Ville" value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
+                  <Field label={`${t('auth.fullName', lang)} *`} value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
+                  <Field label={`${t('auth.email', lang)} *`} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                  <Field label={`${t('auth.password', lang)} *`} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
+                  <Field label={t('auth.city', lang)} value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
 
                   <div>
-                    <Label text="Votre région" />
+                    <Label text={t('auth.region', lang)} />
                     <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                       {REGIONS.map(r => (
                         <button key={r} onClick={() => set('region', r)} className={`opt-btn ${form.region === r ? 'active' : ''}`}>
@@ -171,9 +197,9 @@ function AuthForm() {
                   </div>
 
                   <div>
-                    <Label text="Votre principale compétence" />
+                    <Label text={t('auth.skill', lang)} />
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
-                      {CATEGORIES.map(c => (
+                      {categories.map(c => (
                         <button key={c} onClick={() => set('category', c)} className={`opt-btn ${form.category === c ? 'active' : ''}`}>{c}</button>
                       ))}
                     </div>
@@ -181,10 +207,12 @@ function AuthForm() {
 
                   {error && <ErrorMsg msg={error} />}
                   {success && <SuccessMsg msg={success} />}
-                  <button onClick={handleRegister} disabled={loading} className="submit-btn">{loading ? '⏳ Création...' : 'Créer mon compte gratuit →'}</button>
+                  <button onClick={handleRegister} disabled={loading} className="submit-btn">
+                    {loading ? t('common.loading', lang) : t('auth.registerBtn', lang)}
+                  </button>
                   <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
-                    Déjà un compte ?{' '}
-                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>Se connecter</span>
+                    {t('auth.alreadyAccount', lang)}{' '}
+                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>{t('auth.signIn', lang)}</span>
                   </p>
                 </div>
               )}
