@@ -8,26 +8,7 @@ import { t } from '../i18n';
 import LanguageSwitcher from '../LanguageSwitcher';
 import MobileNav from '../MobileNav';
 
-const navStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-  * { box-sizing: border-box; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #F8F7FF; }
-  :root { --p:#6C63FF;--p2:#4F46E5;--pl:#EEF0FF;--s:#EC4899;--a:#10B981;--b:#E8E6FF;--t1:#1A1635;--t2:#4B4869;--t3:#9290B0; }
-  .nav-link { font-size: 13px; color: var(--t2); text-decoration: none; font-weight: 500; transition: color 0.2s; }
-  .nav-link:hover { color: var(--p); }
-  .nav-link.active { color: var(--p); font-weight: 700; }
-  .kpi-card { background: white; border: 1px solid var(--b); border-radius: 20px; padding: 24px; transition: all 0.2s; }
-  .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(108,99,255,0.1); }
-  .kpi-card.accent { background: linear-gradient(135deg, var(--p), var(--p2)); border-color: transparent; }
-  .action-card { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; background: #F8F7FF; border: 1px solid var(--b); text-decoration: none; color: var(--t1); font-size: 14px; font-weight: 600; transition: all 0.2s; }
-  .action-card:hover { border-color: var(--p); background: var(--pl); transform: translateX(4px); }
-  .action-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .profile-mini { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #F8F7FF; border: 1px solid var(--b); transition: all 0.2s; }
-  .profile-mini:hover { border-color: var(--p); background: var(--pl); }
-  .skill-chip { font-size: 12px; background: var(--pl); color: var(--p); padding: 5px 14px; border-radius: 20px; font-weight: 600; }
-  .logout-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--t3); font-family: inherit; padding: 8px 14px; border-radius: 8px; transition: all 0.2s; }
-  .logout-btn:hover { background: #FEF2F2; color: #EF4444; }
-`;
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -60,7 +41,7 @@ export default function DashboardPage() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
-      <style>{navStyles}</style>
+      
       <div style={{ width: '48px', height: '48px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>🔄</div>
       <p style={{ color: '#9290B0', fontWeight: 500 }}>{t('common.loading', lang)}</p>
     </div>
@@ -68,7 +49,7 @@ export default function DashboardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F7FF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
-      <style>{navStyles}</style>
+      
 
       {/* Navbar */}
       <nav className="desktop-nav" style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -97,23 +78,23 @@ export default function DashboardPage() {
       </nav>
 
       <MobileNav active="/dashboard" />
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '36px 32px' }}>
+      <div className="page-wrap">
 
         {/* Welcome */}
-        <div style={{ marginBottom: '36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="welcome-row">
           <div>
             <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#1A1635', marginBottom: '4px', letterSpacing: '-0.5px' }}>
               {t('dashboard.hello', lang)} {firstName} 👋
             </h1>
             <p style={{ color: '#9290B0', fontSize: '14px' }}>{t('dashboard.subtitle', lang)}</p>
           </div>
-          <Link href="/profile" style={{ padding: '11px 24px', borderRadius: '12px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700, boxShadow: '0 4px 14px rgba(108,99,255,0.4)' }}>
+          <Link href="/profile" className="btn-full-mobile">
             {t('dashboard.addSkill', lang)}
           </Link>
         </div>
 
         {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+        <div className="grid-kpi">
           {[
             { icon: '⏱️', label: t('dashboard.credits', lang), value: profile?.credits || 0, sub: t('dashboard.creditsUsable', lang), accent: true },
             { icon: '🎯', label: t('dashboard.skillsOffered', lang), value: skills.length, sub: t('dashboard.skillsVisible', lang), accent: false },
@@ -129,7 +110,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        <div className="grid-2col">
 
           {/* Actions rapides */}
           <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
@@ -198,7 +179,7 @@ export default function DashboardPage() {
               <Link href="/profile" style={{ padding: '11px 28px', borderRadius: '12px', background: 'linear-gradient(135deg,#6C63FF,#4F46E5)', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>{t('dashboard.addFirstSkill', lang)}</Link>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
+            <div className="grid-skills">
               {skills.map((s, i) => (
                 <div key={i} style={{ background: '#F8F7FF', border: '1px solid #E8E6FF', borderRadius: '14px', padding: '16px' }}>
                   <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1635', marginBottom: '6px' }}>{s.title}</div>

@@ -141,7 +141,7 @@ export default function ExchangesPage() {
       </nav>
 
       <MobileNav active="/exchanges" />
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '36px 24px' }}>
+      <div className="page-wrap-800">
         <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#1A1635', marginBottom: '28px', letterSpacing: '-0.5px' }}>
           {t('exchanges.title', lang)}
         </h1>

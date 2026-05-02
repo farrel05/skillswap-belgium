@@ -116,14 +116,14 @@ export default function ProfilePage() {
       </nav>
 
       <MobileNav active="/profile" />
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '36px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="page-wrap-sm">
 
         <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#1A1635', letterSpacing: '-0.5px' }}>{t('profile.title', lang)}</h1>
 
         {/* Infos générales */}
         <div style={{ background: 'white', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
           <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#1A1635', marginBottom: '20px' }}>{t('profile.general', lang)}</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="grid-profile-form">
             {[
               { label: t('profile.fullName', lang), field: 'full_name', placeholder: 'Jean Dupont' },
               { label: t('profile.city', lang),     field: 'location',  placeholder: 'Bruxelles' },
@@ -224,7 +224,7 @@ export default function ProfilePage() {
               {t('profile.noSkills', lang)}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+            <div className="grid-skills-2">
               {skillsOffered.map((s, i) => (
                 <div key={i} style={{ background: '#F8F7FF', border: '1px solid #E8E6FF', borderRadius: '12px', padding: '14px', position: 'relative' }}>
                   <div style={{ fontSize: '14px', fontWeight: 700, color: '#1A1635', marginBottom: '6px' }}>{s.title}</div>

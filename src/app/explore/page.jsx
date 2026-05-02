@@ -24,27 +24,7 @@ const AVATAR_COLORS = [
   'linear-gradient(135deg,#EC4899,#F97316)',
 ];
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-  * { box-sizing: border-box; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #F8F7FF; }
-  :root { --p:#6C63FF;--p2:#4F46E5;--pl:#EEF0FF;--s:#EC4899;--b:#E8E6FF;--t1:#1A1635;--t2:#4B4869;--t3:#9290B0; }
-  .nav-link { font-size: 13px; color: var(--t2); text-decoration: none; font-weight: 500; transition: color 0.2s; }
-  .nav-link:hover,.nav-link.active { color: var(--p); font-weight: 700; }
-  .filter-btn { padding: 7px 16px; border-radius: 20px; font-size: 12px; border: 1.5px solid var(--b); background: white; color: var(--t2); cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; }
-  .filter-btn:hover { border-color: var(--p); color: var(--p); }
-  .filter-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: 700; box-shadow: 0 4px 12px rgba(108,99,255,0.3); }
-  .profile-card { background: white; border: 1px solid var(--b); border-radius: 20px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
-  .profile-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--p), var(--s)); opacity: 0; transition: opacity 0.3s; }
-  .profile-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(108,99,255,0.12); }
-  .profile-card:hover::before { opacity: 1; }
-  .skill-tag { font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
-  .btn-request { padding: 9px 20px; border-radius: 10px; background: linear-gradient(135deg, var(--p), var(--p2)); color: white; border: none; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-  .btn-request:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(108,99,255,0.4); }
-  .search-input { width: 100%; padding: 14px 20px 14px 48px; border-radius: 14px; border: 1.5px solid var(--b); font-size: 14px; outline: none; font-family: inherit; background: white; color: var(--t1); transition: all 0.2s; }
-  .search-input:focus { border-color: var(--p); box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
-  .search-input::placeholder { color: var(--t3); }
-`;
+
 
 export default function ExplorePage() {
   const router = useRouter();
@@ -97,7 +77,7 @@ export default function ExplorePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F7FF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
-      <style>{styles}</style>
+      
 
       {/* Navbar */}
       <nav className="desktop-nav" style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -129,7 +109,7 @@ export default function ExplorePage() {
       </nav>
 
       <MobileNav active="/explore" />
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 32px' }}>
+      <div className="page-wrap">
 
         {/* Header */}
         <div style={{ marginBottom: '36px' }}>
@@ -185,7 +165,7 @@ export default function ExplorePage() {
             <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('explore.noResultsSub', lang)}</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '22px' }}>
+          <div className="grid-3col">
             {filtered.map((p, i) => (
               <div key={i} className="profile-card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
