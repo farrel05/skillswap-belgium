@@ -143,13 +143,14 @@ function AuthForm() {
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px', background: '#F8F7FF', overflowY: 'auto', position: 'relative' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#F8F7FF', overflowY: 'auto' }}>
 
-        {/* Language switcher */}
-        <div style={{ position: 'absolute', top: '24px', right: '32px' }}>
+        {/* Language switcher — toujours visible en haut */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px 24px' }}>
           <LanguageSwitcher />
         </div>
 
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px 40px' }}>
         <div style={{ width: '100%', maxWidth: '460px' }}>
           <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
 
@@ -225,6 +226,7 @@ function AuthForm() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

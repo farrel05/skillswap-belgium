@@ -39,7 +39,7 @@ const S = `
   .grid-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 
   /* ── RESPONSIVE ── */
-  @media(max-width:768px){
+  @media(max-width:1024px){
     .page-wrap{padding:20px 16px}
     .grid-3col{grid-template-columns:1fr}
   }

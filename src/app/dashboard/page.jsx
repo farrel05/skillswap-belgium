@@ -33,7 +33,7 @@ const S = `
   .first-skill-btn{display:inline-block;padding:11px 28px;border-radius:12px;background:linear-gradient(135deg,#6C63FF,#4F46E5);color:white;text-decoration:none;font-size:14px;font-weight:700}
 
   /* ── RESPONSIVE MOBILE ── */
-  @media(max-width:768px){
+  @media(max-width:1024px){
     .grid-kpi{grid-template-columns:repeat(2,1fr);gap:12px}
     .grid-2col{grid-template-columns:1fr;gap:16px}
     .grid-skills{grid-template-columns:repeat(2,1fr)}

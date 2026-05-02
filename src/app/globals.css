@@ -179,7 +179,7 @@ html, body {
 .skill-chip { font-size: 12px; background: var(--pl); color: var(--p); padding: 5px 14px; border-radius: 20px; font-weight: 600; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   .mobile-bottom-nav { display: flex; }
   .mobile-top-header { display: flex; }
