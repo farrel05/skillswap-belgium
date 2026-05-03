@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -14,15 +14,24 @@ const CATEGORIES_I18N = {
   en: ['Tech / Dev', 'Design', 'Marketing', 'Writing', 'Accounting', 'Photo / Video', 'Languages', 'Coaching', 'Other'],
 };
 const CATEGORIES_DB = ['Tech / Dev', 'Design', 'Marketing', 'Rédaction', 'Comptabilité', 'Photo / Vidéo', 'Langues', 'Coaching', 'Autre'];
-
 const LEVELS_I18N = {
   fr: ['Débutant', 'Intermédiaire', 'Expert'],
   nl: ['Beginner', 'Gemiddeld', 'Expert'],
   en: ['Beginner', 'Intermediate', 'Expert'],
 };
 const LEVELS_DB = ['Débutant', 'Intermédiaire', 'Expert'];
-
 const REGIONS = ['Bruxelles', 'Wallonie', 'Flandre'];
+
+const S = `
+  .page-wrap-sm{max-width:900px;margin:0 auto;padding:36px 24px;display:flex;flex-direction:column;gap:24px}
+  .grid-profile-form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-skills-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:1024px){
+    .page-wrap-sm{padding:20px 16px}
+    .grid-profile-form{grid-template-columns:1fr}
+    .grid-skills-2{grid-template-columns:1fr}
+  }
+`;
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -37,21 +46,21 @@ export default function ProfilePage() {
   const [newSkill, setNewSkill] = useState({ title: '', description: '', categoryIndex: 0, levelIndex: 1 });
   const [profileForm, setProfileForm] = useState({ full_name: '', bio: '', location: '', region: '' });
 
-  useEffect(() => { loadData(); }, []);
-
-  const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push('/auth'); return; }
-    setUser(user);
-    const { data: profile } = await supabase.from('skillswap_profiles').select('*').eq('id', user.id).single();
-    if (profile) {
-      setProfile(profile);
-      setProfileForm({ full_name: profile.full_name || '', bio: profile.bio || '', location: profile.location || '', region: profile.region || '' });
+  const loadData = useCallback(async () => {
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) { router.push('/auth'); return; }
+    setUser(u);
+    const { data: p } = await supabase.from('skillswap_profiles').select('*').eq('id', u.id).single();
+    if (p) {
+      setProfile(p);
+      setProfileForm({ full_name: p.full_name || '', bio: p.bio || '', location: p.location || '', region: p.region || '' });
     }
-    const { data: offered } = await supabase.from('skills_offered').select('*').eq('user_id', user.id);
+    const { data: offered } = await supabase.from('skills_offered').select('*').eq('user_id', u.id);
     setSkillsOffered(offered || []);
     setLoading(false);
-  };
+  }, [router]);
+
+  useEffect(() => { loadData(); }, [loadData]);
 
   const saveProfile = async () => {
     setSaving(true);
@@ -81,6 +90,7 @@ export default function ProfilePage() {
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+      <style>{S}</style>
       <div style={{ width: '48px', height: '48px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>🔄</div>
       <p style={{ color: '#9290B0', fontWeight: 500 }}>{t('common.loading', lang)}</p>
     </div>
@@ -90,8 +100,8 @@ export default function ProfilePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F7FF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+      <style>{S}</style>
 
-      {/* Navbar */}
       <nav className="desktop-nav" style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #E8E6FF', padding: '0 32px', alignItems: 'center', justifyContent: 'space-between', height: '68px', position: 'sticky', top: 0, zIndex: 100 }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <div style={{ width: '36px', height: '36px', background: 'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🔄</div>
@@ -116,8 +126,8 @@ export default function ProfilePage() {
       </nav>
 
       <MobileNav active="/profile" />
-      <div className="page-wrap-sm">
 
+      <div className="page-wrap-sm">
         <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#1A1635', letterSpacing: '-0.5px' }}>{t('profile.title', lang)}</h1>
 
         {/* Infos générales */}
@@ -145,7 +155,7 @@ export default function ProfilePage() {
 
           <div style={{ marginTop: '16px' }}>
             <label style={{ fontSize: '13px', fontWeight: 600, color: '#4B4869', display: 'block', marginBottom: '8px' }}>{t('profile.region', lang)}</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {REGIONS.map(r => (
                 <button key={r} onClick={() => setProfileForm(f => ({ ...f, region: r }))}
                   style={{ padding: '8px 20px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, border: `1.5px solid ${profileForm.region === r ? '#6C63FF' : '#E8E6FF'}`, background: profileForm.region === r ? '#6C63FF' : 'white', color: profileForm.region === r ? 'white' : '#4B4869', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' }}>

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -33,12 +33,8 @@ const S = `
   .search-input{width:100%;padding:14px 20px 14px 48px;border-radius:14px;border:1.5px solid #E8E6FF;font-size:14px;outline:none;font-family:inherit;background:white;color:#1A1635;transition:all .2s}
   .search-input:focus{border-color:#6C63FF;box-shadow:0 0 0 4px rgba(108,99,255,.1)}
   .search-input::placeholder{color:#9290B0}
-
-  /* ── LAYOUT ── */
   .page-wrap{max-width:1200px;margin:0 auto;padding:40px 32px}
   .grid-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-
-  /* ── RESPONSIVE ── */
   @media(max-width:1024px){
     .page-wrap{padding:20px 16px}
     .grid-3col{grid-template-columns:1fr}
@@ -56,27 +52,30 @@ export default function ExplorePage() {
   const [region, setRegion] = useState('Toutes');
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => { loadProfiles(); }, []);
-  useEffect(() => { filterProfiles(); }, [search, categoryIndex, region, profiles]);
-
-  const loadProfiles = async () => {
+  const loadProfiles = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setCurrentUser(user);
     const { data } = await supabase.from('skillswap_profiles').select('*, skills_offered(*)').order('created_at', { ascending: false });
     setProfiles(data || []);
     setFiltered(data || []);
     setLoading(false);
-  };
+  }, []);
 
-  const filterProfiles = () => {
+  useEffect(() => { loadProfiles(); }, [loadProfiles]);
+
+  useEffect(() => {
     let result = [...profiles];
     const categoryDB = CATEGORIES_DB[categoryIndex];
     if (currentUser) result = result.filter(p => p.id !== currentUser.id);
-    if (search) result = result.filter(p => p.full_name?.toLowerCase().includes(search.toLowerCase()) || p.bio?.toLowerCase().includes(search.toLowerCase()) || p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase())));
+    if (search) result = result.filter(p =>
+      p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.bio?.toLowerCase().includes(search.toLowerCase()) ||
+      p.skills_offered?.some(s => s.title?.toLowerCase().includes(search.toLowerCase()))
+    );
     if (region !== 'Toutes') result = result.filter(p => p.region === region);
     if (categoryDB !== 'Tous') result = result.filter(p => p.skills_offered?.some(s => s.category === categoryDB));
     setFiltered(result);
-  };
+  }, [search, categoryIndex, region, profiles, currentUser]);
 
   const requestExchange = async (providerId) => {
     if (!currentUser) { router.push('/auth'); return; }
@@ -90,7 +89,6 @@ export default function ExplorePage() {
     <div style={{ minHeight:'100vh', background:'#F8F7FF', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
       <style>{S}</style>
 
-      {/* Navbar desktop */}
       <nav className="desktop-nav" style={{ background:'rgba(255,255,255,0.9)', backdropFilter:'blur(20px)', borderBottom:'1px solid #E8E6FF', padding:'0 32px', alignItems:'center', justifyContent:'space-between', height:'68px', position:'sticky', top:0, zIndex:100 }}>
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', textDecoration:'none' }}>
           <div style={{ width:'36px', height:'36px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px' }}>🔄</div>
@@ -113,13 +111,11 @@ export default function ExplorePage() {
       <MobileNav active="/explore" />
 
       <div className="page-wrap">
-        {/* Header */}
         <div style={{ marginBottom:'36px' }}>
           <h1 style={{ fontSize:'32px', fontWeight:800, color:'#1A1635', marginBottom:'6px', letterSpacing:'-0.5px' }}>{t('explore.title', lang)}</h1>
           <p style={{ color:'#9290B0', fontSize:'14px' }}>{filtered.length} {t('explore.profiles',lang)}{filtered.length>1?'s':''} {t('explore.subtitle',lang)}</p>
         </div>
 
-        {/* Filters */}
         <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'24px', marginBottom:'32px', boxShadow:'0 4px 20px rgba(108,99,255,.06)' }}>
           <div style={{ position:'relative', marginBottom:'20px' }}>
             <span style={{ position:'absolute', left:'16px', top:'50%', transform:'translateY(-50%)', fontSize:'18px' }}>🔍</span>
@@ -147,7 +143,6 @@ export default function ExplorePage() {
           </div>
         </div>
 
-        {/* Grid */}
         {loading ? (
           <div style={{ textAlign:'center', padding:'80px', color:'#9290B0' }}>
             <div style={{ fontSize:'40px', marginBottom:'12px' }}>⏳</div>

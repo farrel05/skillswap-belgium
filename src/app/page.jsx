@@ -102,7 +102,7 @@ export default function HomePage() {
         <div className="hero-stats" style={{ display: 'flex', gap: '48px', justifyContent: 'center', marginTop: '64px', padding: '36px 40px', background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 8px 40px rgba(108,99,255,0.08)', flexWrap: 'wrap' }}>
           {[['500+', 'membersLabel'], ['1 200+', 'exchangesLabel'], ['3', 'regionsLabel'], ['4.9★', 'ratingLabel']].map(([v, key], i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '30px', fontWeight: 800, background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} className="stat-val">{v}</div>
+              <div style={{ fontSize: '30px', fontWeight: 800, background: 'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{v}</div>
               <div style={{ fontSize: '13px', color: '#9290B0', marginTop: '4px', fontWeight: 500 }}>{t(`home.${key}`, lang)}</div>
             </div>
           ))}
@@ -160,7 +160,7 @@ export default function HomePage() {
           <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '24px' }}>
             {TESTIMONIALS.map((test, i) => (
               <div key={i} style={{ background: '#F8F7FF', border: '1px solid #E8E6FF', borderRadius: '20px', padding: '28px' }}>
-                <div style={{ fontSize: '28px', color: '#6C63FF', marginBottom: '16px' }}>"</div>
+                <div style={{ fontSize: '28px', color: '#6C63FF', marginBottom: '16px' }}></div>
                 <p style={{ fontSize: '15px', color: '#4B4869', lineHeight: 1.7, marginBottom: '20px', fontStyle: 'italic' }}>
                   {test.text[lang] || test.text.fr}
                 </p>
@@ -206,10 +206,12 @@ export default function HomePage() {
 
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
-        @media(max-width:768px){
+        @media(max-width:1024px){
           section { padding: 48px 16px !important; }
           h1 { font-size: 32px !important; letter-spacing: -1px !important; }
           h2 { font-size: 26px !important; }
+          .grid-4 { grid-template-columns: repeat(2,1fr) !important; }
+          .grid-3 { grid-template-columns: 1fr !important; }
           footer { padding: 24px 16px !important; flex-direction: column; text-align: center; }
         }
       `}</style>

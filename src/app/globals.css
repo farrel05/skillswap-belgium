@@ -80,7 +80,7 @@ html, body {
 }
 .mobile-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
 .mobile-logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--p), var(--s)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.mobile-logo-text { font-weight: 800; font-size: 16px; background: linear-gradient(135deg, var(--p), var(--s)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.mobile-logo-text { font-weight: 800; font-size: 16px; background: linear-gradient(135deg, var(--p), var(--s)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 /* ── LAYOUT CLASSES ──────────────────────────────────────── */
 .page-wrap {

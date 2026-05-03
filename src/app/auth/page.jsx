@@ -43,12 +43,7 @@ const styles = `
     --s: #EC4899; --a: #10B981;
     --b: #E8E6FF; --t1: #1A1635; --t2: #4B4869; --t3: #9290B0;
   }
-  .auth-input {
-    width: 100%; padding: 12px 16px; border-radius: 12px;
-    border: 1.5px solid var(--b); font-size: 14px;
-    outline: none; font-family: inherit; background: #F8F7FF;
-    color: var(--t1); transition: all 0.2s;
-  }
+  .auth-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--b); font-size: 14px; outline: none; font-family: inherit; background: #F8F7FF; color: var(--t1); transition: all 0.2s; }
   .auth-input:focus { border-color: var(--p); background: white; box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
   .auth-input::placeholder { color: var(--t3); }
   .tab-btn { flex: 1; padding: 14px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
@@ -60,6 +55,10 @@ const styles = `
   .submit-btn:disabled { background: #E8E6FF; color: var(--t3); box-shadow: none; cursor: not-allowed; }
   .feature-item { display: flex; gap: 14px; align-items: flex-start; }
   .feature-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .auth-left-panel { display: flex; }
+  @media(max-width:1024px) {
+    .auth-left-panel { display: none !important; }
+  }
 `;
 
 function AuthForm() {
@@ -104,10 +103,9 @@ function AuthForm() {
       <style>{styles}</style>
 
       {/* Left panel - caché sur mobile */}
-      <div className="auth-left-panel" style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      <div className="auth-left-panel" style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
         <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
-
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '64px' }}>
             <div style={{ width: '42px', height: '42px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🔄</div>
@@ -116,14 +114,12 @@ function AuthForm() {
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Belgium</div>
             </div>
           </div>
-
           <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '16px', lineHeight: 1.2, letterSpacing: '-0.5px' }}>
             {t('home.title1', lang)}<br />{t('home.title2', lang)}
           </h2>
           <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: '48px' }}>
             {t('home.subtitle', lang)}
           </p>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {features.map((item, i) => (
               <div key={i} className="feature-item">
@@ -136,7 +132,6 @@ function AuthForm() {
             ))}
           </div>
         </div>
-
         <div style={{ position: 'relative', zIndex: 1, paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>🇧🇪 © 2026 SkillSwap Belgium</p>
         </div>
@@ -144,89 +139,80 @@ function AuthForm() {
 
       {/* Right panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#F8F7FF', overflowY: 'auto' }}>
-
-        {/* Language switcher — toujours visible en haut */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px 24px' }}>
           <LanguageSwitcher />
         </div>
-
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px 40px' }}>
-        <div style={{ width: '100%', maxWidth: '460px' }}>
-          <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
-
-            {/* Tabs */}
-            <div style={{ display: 'flex', borderBottom: '1px solid #E8E6FF' }}>
-              {[['login', t('auth.login', lang)], ['register', t('auth.register', lang)]].map(([m, label]) => (
-                <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }} className="tab-btn"
-                  style={{ background: mode === m ? '#EEF0FF' : 'white', color: mode === m ? '#6C63FF' : '#9290B0', borderBottom: mode === m ? '2px solid #6C63FF' : 'none' }}>
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ padding: '32px' }}>
-              {mode === 'login' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>{t('auth.welcome', lang)}</h2>
-                    <p style={{ fontSize: '14px', color: '#9290B0' }}>SkillSwap Belgium</p>
-                  </div>
-                  <Field label={t('auth.email', lang)} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                  <Field label={t('auth.password', lang)} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
-                  {error && <ErrorMsg msg={error} />}
-                  <button onClick={handleLogin} disabled={loading} className="submit-btn">
-                    {loading ? t('common.loading', lang) : t('auth.loginBtn', lang)}
+          <div style={{ width: '100%', maxWidth: '460px' }}>
+            <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', borderBottom: '1px solid #E8E6FF' }}>
+                {[['login', t('auth.login', lang)], ['register', t('auth.register', lang)]].map(([m, label]) => (
+                  <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }} className="tab-btn"
+                    style={{ background: mode === m ? '#EEF0FF' : 'white', color: mode === m ? '#6C63FF' : '#9290B0', borderBottom: mode === m ? '2px solid #6C63FF' : 'none' }}>
+                    {label}
                   </button>
-                  <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
-                    {t('auth.noAccount', lang)}{' '}
-                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>{t('auth.createFree', lang)}</span>
-                  </p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                  <div>
-                    <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>{t('auth.createAccount', lang)}</h2>
-                    <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('auth.free', lang)}</p>
-                  </div>
-                  <Field label={`${t('auth.fullName', lang)} *`} value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
-                  <Field label={`${t('auth.email', lang)} *`} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                  <Field label={`${t('auth.password', lang)} *`} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
-                  <Field label={t('auth.city', lang)} value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
-
-                  <div>
-                    <Label text={t('auth.region', lang)} />
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                      {REGIONS.map(r => (
-                        <button key={r} onClick={() => set('region', r)} className={`opt-btn ${form.region === r ? 'active' : ''}`}>
-                          {r === 'Bruxelles' ? '🏙️' : r === 'Wallonie' ? '🌿' : '🌊'} {r}
-                        </button>
-                      ))}
+                ))}
+              </div>
+              <div style={{ padding: '32px' }}>
+                {mode === 'login' ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                      <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>{t('auth.welcome', lang)}</h2>
+                      <p style={{ fontSize: '14px', color: '#9290B0' }}>SkillSwap Belgium</p>
                     </div>
+                    <Field label={t('auth.email', lang)} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                    <Field label={t('auth.password', lang)} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
+                    {error && <ErrorMsg msg={error} />}
+                    <button onClick={handleLogin} disabled={loading} className="submit-btn">
+                      {loading ? t('common.loading', lang) : t('auth.loginBtn', lang)}
+                    </button>
+                    <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+                      {t('auth.noAccount', lang)}{' '}
+                      <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>{t('auth.createFree', lang)}</span>
+                    </p>
                   </div>
-
-                  <div>
-                    <Label text={t('auth.skill', lang)} />
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
-                      {categories.map(c => (
-                        <button key={c} onClick={() => set('category', c)} className={`opt-btn ${form.category === c ? 'active' : ''}`}>{c}</button>
-                      ))}
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                    <div>
+                      <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>{t('auth.createAccount', lang)}</h2>
+                      <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('auth.free', lang)}</p>
                     </div>
+                    <Field label={`${t('auth.fullName', lang)} *`} value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
+                    <Field label={`${t('auth.email', lang)} *`} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
+                    <Field label={`${t('auth.password', lang)} *`} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
+                    <Field label={t('auth.city', lang)} value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
+                    <div>
+                      <Label text={t('auth.region', lang)} />
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                        {REGIONS.map(r => (
+                          <button key={r} onClick={() => set('region', r)} className={`opt-btn ${form.region === r ? 'active' : ''}`}>
+                            {r === 'Bruxelles' ? '🏙️' : r === 'Wallonie' ? '🌿' : '🌊'} {r}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label text={t('auth.skill', lang)} />
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                        {categories.map(c => (
+                          <button key={c} onClick={() => set('category', c)} className={`opt-btn ${form.category === c ? 'active' : ''}`}>{c}</button>
+                        ))}
+                      </div>
+                    </div>
+                    {error && <ErrorMsg msg={error} />}
+                    {success && <SuccessMsg msg={success} />}
+                    <button onClick={handleRegister} disabled={loading} className="submit-btn">
+                      {loading ? t('common.loading', lang) : t('auth.registerBtn', lang)}
+                    </button>
+                    <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+                      {t('auth.alreadyAccount', lang)}{' '}
+                      <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>{t('auth.signIn', lang)}</span>
+                    </p>
                   </div>
-
-                  {error && <ErrorMsg msg={error} />}
-                  {success && <SuccessMsg msg={success} />}
-                  <button onClick={handleRegister} disabled={loading} className="submit-btn">
-                    {loading ? t('common.loading', lang) : t('auth.registerBtn', lang)}
-                  </button>
-                  <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
-                    {t('auth.alreadyAccount', lang)}{' '}
-                    <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>{t('auth.signIn', lang)}</span>
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>

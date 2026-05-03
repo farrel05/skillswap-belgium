@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -22,8 +22,6 @@ const S = `
   .profile-mini{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:#F8F7FF;border:1px solid #E8E6FF;transition:all .2s}
   .profile-mini:hover{border-color:#6C63FF;background:#EEF0FF}
   .skill-chip{font-size:12px;background:#EEF0FF;color:#6C63FF;padding:5px 14px;border-radius:20px;font-weight:600}
-
-  /* ── GRILLES DESKTOP ── */
   .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
   .grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
   .grid-skills{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
@@ -31,8 +29,6 @@ const S = `
   .page-wrap{max-width:1200px;margin:0 auto;padding:36px 32px}
   .add-skill-btn{padding:11px 24px;border-radius:12px;background:linear-gradient(135deg,#6C63FF,#4F46E5);color:white;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(108,99,255,.4);white-space:nowrap}
   .first-skill-btn{display:inline-block;padding:11px 28px;border-radius:12px;background:linear-gradient(135deg,#6C63FF,#4F46E5);color:white;text-decoration:none;font-size:14px;font-weight:700}
-
-  /* ── RESPONSIVE MOBILE ── */
   @media(max-width:1024px){
     .grid-kpi{grid-template-columns:repeat(2,1fr);gap:12px}
     .grid-2col{grid-template-columns:1fr;gap:16px}
@@ -53,20 +49,20 @@ export default function DashboardPage() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadData(); }, []);
-
-  const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push('/auth'); return; }
-    setUser(user);
-    const { data: profile } = await supabase.from('skillswap_profiles').select('*').eq('id', user.id).single();
-    setProfile(profile);
-    const { data: skills } = await supabase.from('skills_offered').select('*').eq('user_id', user.id);
-    setSkills(skills || []);
-    const { data: allProfiles } = await supabase.from('skillswap_profiles').select('*').neq('id', user.id).limit(4);
-    setMatches(allProfiles || []);
+  const loadData = useCallback(async () => {
+    const { data: { user: u } } = await supabase.auth.getUser();
+    if (!u) { router.push('/auth'); return; }
+    setUser(u);
+    const { data: p } = await supabase.from('skillswap_profiles').select('*').eq('id', u.id).single();
+    setProfile(p);
+    const { data: s } = await supabase.from('skills_offered').select('*').eq('user_id', u.id);
+    setSkills(s || []);
+    const { data: all } = await supabase.from('skillswap_profiles').select('*').neq('id', u.id).limit(4);
+    setMatches(all || []);
     setLoading(false);
-  };
+  }, [router]);
+
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
   const firstName = profile?.full_name?.split(' ')[0] || '';
@@ -84,7 +80,6 @@ export default function DashboardPage() {
     <div style={{ minHeight:'100vh', background:'#F8F7FF', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
       <style>{S}</style>
 
-      {/* Navbar desktop */}
       <nav className="desktop-nav" style={{ background:'rgba(255,255,255,0.9)', backdropFilter:'blur(20px)', borderBottom:'1px solid #E8E6FF', padding:'0 32px', alignItems:'center', justifyContent:'space-between', height:'68px', position:'sticky', top:0, zIndex:100 }}>
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', textDecoration:'none' }}>
           <div style={{ width:'36px', height:'36px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px' }}>🔄</div>
@@ -105,12 +100,9 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      {/* Nav mobile bottom */}
       <MobileNav active="/dashboard" />
 
       <div className="page-wrap">
-
-        {/* Welcome */}
         <div className="welcome-row">
           <div>
             <h1 style={{ fontSize:'28px', fontWeight:800, color:'#1A1635', marginBottom:'4px', letterSpacing:'-0.5px' }}>
@@ -121,7 +113,6 @@ export default function DashboardPage() {
           <Link href="/profile" className="add-skill-btn">{t('dashboard.addSkill', lang)}</Link>
         </div>
 
-        {/* KPIs */}
         <div className="grid-kpi">
           {[
             { icon:'⏱️', label:t('dashboard.credits',lang), value:profile?.credits||0, sub:t('dashboard.creditsUsable',lang), accent:true },
@@ -138,7 +129,6 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Actions + Profils */}
         <div className="grid-2col">
           <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'28px' }}>
             <h2 style={{ fontSize:'17px', fontWeight:800, color:'#1A1635', marginBottom:'20px' }}>{t('dashboard.quickActions', lang)}</h2>
@@ -187,7 +177,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Mes compétences */}
         <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'28px' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' }}>
             <h2 style={{ fontSize:'17px', fontWeight:800, color:'#1A1635' }}>{t('dashboard.mySkills', lang)}</h2>
