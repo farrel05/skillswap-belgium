@@ -10,19 +10,13 @@ export const translations = {
     subtitle:     { fr: 'Connectez-vous avec des professionnels belges, échangez vos expertises et progressez ensemble — sans débourser un centime.', nl: 'Verbind je met Belgische professionals, wissel expertise uit en groei samen — zonder een cent uit te geven.', en: 'Connect with Belgian professionals, exchange expertise and grow together — without spending a cent.' },
     joinBtn:      { fr: 'Rejoindre gratuitement 🚀', nl: 'Gratis meedoen 🚀', en: 'Join for free 🚀' },
     exploreBtn:   { fr: 'Explorer les profils', nl: 'Profielen verkennen', en: 'Explore profiles' },
-
-    // Stats
     membersLabel:   { fr: 'Membres actifs', nl: 'Actieve leden', en: 'Active members' },
     exchangesLabel: { fr: 'Échanges réalisés', nl: 'Voltooide uitwisselingen', en: 'Completed exchanges' },
     regionsLabel:   { fr: 'Régions belges', nl: 'Belgische regio\'s', en: 'Belgian regions' },
     ratingLabel:    { fr: 'Note moyenne', nl: 'Gemiddelde beoordeling', en: 'Average rating' },
-
-    // Categories section
     catTitle:     { fr: 'Toutes les compétences, une seule plateforme', nl: 'Alle vaardigheden, één platform', en: 'All skills, one platform' },
     catSub:       { fr: 'Des centaines d\'experts belges dans chaque domaine', nl: 'Honderden Belgische experts in elk domein', en: 'Hundreds of Belgian experts in every field' },
     catMembers:   { fr: 'membres', nl: 'leden', en: 'members' },
-
-    // How it works
     howTitle:     { fr: 'Comment ça marche ?', nl: 'Hoe werkt het?', en: 'How does it work?' },
     howSub:       { fr: 'En 4 étapes simples, commencez à échanger vos compétences', nl: 'In 4 eenvoudige stappen beginnen met het uitwisselen van vaardigheden', en: 'In 4 simple steps, start exchanging your skills' },
     step:         { fr: 'Étape', nl: 'Stap', en: 'Step' },
@@ -34,11 +28,7 @@ export const translations = {
     step3d:       { fr: 'Envoyez une demande d\'échange et définissez ensemble les termes de la collaboration.', nl: 'Stuur een ruilverzoek en bepaal samen de voorwaarden van de samenwerking.', en: 'Send an exchange request and define the terms of collaboration together.' },
     step4:        { fr: 'Échangez & progressez', nl: 'Ruil & groei', en: 'Exchange & grow' },
     step4d:       { fr: 'Réalisez l\'échange, évaluez-vous mutuellement et continuez à grandir.', nl: 'Voer de ruil uit, beoordeel elkaar en blijf groeien.', en: 'Complete the exchange, rate each other, and keep growing.' },
-
-    // Testimonials
     testTitle:    { fr: 'Ils ont échangé leurs compétences', nl: 'Zij hebben hun vaardigheden uitgewisseld', en: 'They exchanged their skills' },
-
-    // CTA
     ctaTitle:     { fr: 'Prêt à échanger vos compétences ?', nl: 'Klaar om je vaardigheden uit te wisselen?', en: 'Ready to exchange your skills?' },
     ctaSub:       { fr: 'Rejoignez plus de 500 professionnels belges sur SkillSwap', nl: 'Sluit je aan bij meer dan 500 Belgische professionals op SkillSwap', en: 'Join over 500 Belgian professionals on SkillSwap' },
     ctaBtn:       { fr: 'Commencer gratuitement →', nl: 'Gratis beginnen →', en: 'Start for free →' },
@@ -46,13 +36,14 @@ export const translations = {
 
   // ── Navigation ────────────────────────────────────────────
   nav: {
-    dashboard:  { fr: '🏠 Dashboard',  nl: '🏠 Dashboard',  en: '🏠 Dashboard'  },
-    explore:    { fr: '🔍 Explorer',   nl: '🔍 Verkennen',  en: '🔍 Explore'    },
-    profile:    { fr: '👤 Mon profil', nl: '👤 Mijn profiel', en: '👤 My profile' },
-    exchanges:  { fr: '🤝 Échanges',  nl: '🤝 Uitwisseling', en: '🤝 Exchanges'  },
-    logout:     { fr: 'Déconnexion',   nl: 'Uitloggen',      en: 'Logout'        },
-    login:      { fr: 'Connexion',     nl: 'Inloggen',       en: 'Login'         },
-    register:   { fr: 'S\'inscrire',   nl: 'Registreren',    en: 'Sign up'       },
+    dashboard:  { fr: '🏠 Dashboard',   nl: '🏠 Dashboard',    en: '🏠 Dashboard'   },
+    explore:    { fr: '🔍 Explorer',    nl: '🔍 Verkennen',    en: '🔍 Explore'     },
+    profile:    { fr: '👤 Mon profil',  nl: '👤 Mijn profiel', en: '👤 My profile'  },
+    exchanges:  { fr: '🤝 Échanges',   nl: '🤝 Uitwisseling', en: '🤝 Exchanges'   },
+    messages:   { fr: '💬 Messages',   nl: '💬 Berichten',    en: '💬 Messages'    },
+    logout:     { fr: 'Déconnexion',    nl: 'Uitloggen',       en: 'Logout'         },
+    login:      { fr: 'Connexion',      nl: 'Inloggen',        en: 'Login'          },
+    register:   { fr: 'S\'inscrire',    nl: 'Registreren',     en: 'Sign up'        },
   },
 
   // ── Auth ──────────────────────────────────────────────────
@@ -159,6 +150,24 @@ export const translations = {
     accepted:   { fr: 'Accepté',                    nl: 'Geaccepteerd',                en: 'Accepted'                   },
     rejected:   { fr: 'Refusé',                     nl: 'Geweigerd',                   en: 'Rejected'                   },
     completed:  { fr: 'Terminé',                    nl: 'Voltooid',                    en: 'Completed'                  },
+  },
+
+  // ── Messages ──────────────────────────────────────────────
+  messages: {
+    title:        { fr: '💬 Messages',              nl: '💬 Berichten',                en: '💬 Messages'                },
+    noConv:       { fr: 'Aucune conversation',      nl: 'Geen gesprekken',             en: 'No conversations'           },
+    noConvSub:    { fr: 'Acceptez un échange pour commencer à chatter', nl: 'Accepteer een ruil om te beginnen met chatten', en: 'Accept an exchange to start chatting' },
+    seeExchanges: { fr: 'Voir mes échanges',        nl: 'Mijn uitwisselingen bekijken', en: 'See my exchanges'          },
+    selectConv:   { fr: 'Sélectionnez une conversation', nl: 'Selecteer een gesprek', en: 'Select a conversation'      },
+    selectConvSub:{ fr: 'Choisissez un échange à gauche pour commencer', nl: 'Kies een ruil links om te beginnen', en: 'Choose an exchange on the left to start' },
+    startChat:    { fr: 'Démarrez la conversation !', nl: 'Start het gesprek!',        en: 'Start the conversation!'    },
+    creditPerMsg: { fr: 'Chaque message coûte 1 crédit', nl: 'Elk bericht kost 1 credit', en: 'Each message costs 1 credit' },
+    placeholder:  { fr: 'Écrire un message... (1 crédit)', nl: 'Schrijf een bericht... (1 credit)', en: 'Write a message... (1 credit)' },
+    noCredits:    { fr: 'Crédits insuffisants', nl: 'Onvoldoende credits', en: 'Insufficient credits'                  },
+    noCreditsSub: { fr: 'Achetez des crédits pour continuer', nl: 'Koop credits om door te gaan', en: 'Buy credits to continue' },
+    accepted:     { fr: '● Échange accepté',        nl: '● Ruil geaccepteerd',         en: '● Exchange accepted'        },
+    creditPerMsgBadge: { fr: '1 crédit/message',    nl: '1 credit/bericht',            en: '1 credit/message'           },
+    openChat:     { fr: '💬 Chat',                  nl: '💬 Chat',                     en: '💬 Chat'                    },
   },
 
   // ── Commun ────────────────────────────────────────────────

@@ -12,7 +12,6 @@ const CATEGORIES = {
   en: ['Tech / Dev', 'Design', 'Marketing', 'Writing', 'Accounting', 'Photo / Video', 'Languages', 'Coaching', 'Other'],
 };
 const REGIONS = ['Bruxelles', 'Wallonie', 'Flandre'];
-
 const FEATURES = {
   fr: [
     { icon: '🎁', title: '5 crédits offerts', desc: 'Commencez à échanger immédiatement' },
@@ -38,28 +37,63 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
   * { box-sizing: border-box; }
   body { font-family: 'Plus Jakarta Sans', sans-serif; }
-  :root {
-    --p: #6C63FF; --p2: #4F46E5; --pl: #EEF0FF;
-    --s: #EC4899; --a: #10B981;
-    --b: #E8E6FF; --t1: #1A1635; --t2: #4B4869; --t3: #9290B0;
-  }
-  .auth-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--b); font-size: 14px; outline: none; font-family: inherit; background: #F8F7FF; color: var(--t1); transition: all 0.2s; }
-  .auth-input:focus { border-color: var(--p); background: white; box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
-  .auth-input::placeholder { color: var(--t3); }
-  .tab-btn { flex: 1; padding: 14px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-  .opt-btn { padding: 8px 16px; border-radius: 20px; font-size: 12px; border: 1.5px solid var(--b); background: white; color: var(--t2); cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; }
-  .opt-btn:hover { border-color: var(--p); color: var(--p); }
-  .opt-btn.active { background: var(--p); color: white; border-color: var(--p); font-weight: 700; }
-  .submit-btn { width: 100%; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, var(--p), var(--p2)); color: white; border: none; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(108,99,255,0.4); transition: all 0.2s; }
-  .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(108,99,255,0.5); }
-  .submit-btn:disabled { background: #E8E6FF; color: var(--t3); box-shadow: none; cursor: not-allowed; }
-  .feature-item { display: flex; gap: 14px; align-items: flex-start; }
-  .feature-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .auth-left-panel { display: flex; }
-  @media(max-width:1024px) {
-    .auth-left-panel { display: none !important; }
-  }
+  :root { --p:#6C63FF;--p2:#4F46E5;--pl:#EEF0FF;--s:#EC4899;--b:#E8E6FF;--t1:#1A1635;--t2:#4B4869;--t3:#9290B0; }
+
+  .auth-input { width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--b);font-size:14px;outline:none;font-family:inherit;background:#F8F7FF;color:var(--t1);transition:all .2s; }
+  .auth-input:focus { border-color:var(--p);background:white;box-shadow:0 0 0 4px rgba(108,99,255,.1); }
+  .auth-input::placeholder { color:var(--t3); }
+  .auth-input.error { border-color:#EF4444;background:#FFF5F5; }
+
+  .pw-wrap { position:relative; }
+  .pw-wrap .auth-input { padding-right:44px; }
+  .pw-eye { position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--t3);font-size:16px;padding:0;display:flex;align-items:center;transition:color .2s; }
+  .pw-eye:hover { color:var(--p); }
+
+  .tab-btn { flex:1;padding:14px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .2s; }
+  .opt-btn { padding:8px 16px;border-radius:20px;font-size:12px;border:1.5px solid var(--b);background:white;color:var(--t2);cursor:pointer;font-family:inherit;font-weight:500;transition:all .2s; }
+  .opt-btn:hover { border-color:var(--p);color:var(--p); }
+  .opt-btn.active { background:var(--p);color:white;border-color:var(--p);font-weight:700; }
+
+  .submit-btn { width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--p2));color:white;border:none;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(108,99,255,.4);transition:all .2s; }
+  .submit-btn:hover:not(:disabled) { transform:translateY(-1px);box-shadow:0 10px 28px rgba(108,99,255,.5); }
+  .submit-btn:disabled { background:#E8E6FF;color:var(--t3);box-shadow:none;cursor:not-allowed; }
+
+  .forgot-link { font-size:12px;color:var(--t3);cursor:pointer;text-decoration:none;transition:color .2s;text-align:right;display:block;margin-top:4px; }
+  .forgot-link:hover { color:var(--p); }
+
+  .strength-bar { height:4px;border-radius:4px;margin-top:6px;transition:all .3s; }
+
+  .feature-item { display:flex;gap:14px;align-items:flex-start; }
+  .feature-icon { width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0; }
+  .auth-left-panel { display:flex; }
+
+  .social-btn { width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--b);background:white;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--t1);transition:all .2s; }
+  .social-btn:hover { border-color:var(--p);background:var(--pl); }
+  .divider { display:flex;align-items:center;gap:12px;color:var(--t3);font-size:12px; }
+  .divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--b); }
+
+  @media(max-width:1024px) { .auth-left-panel { display:none !important; } }
 `;
+
+// Calcul force mot de passe
+function getPasswordStrength(pwd) {
+  if (!pwd) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (pwd.length >= 6) score++;
+  if (pwd.length >= 10) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  const levels = [
+    { label: '', color: '' },
+    { label: 'Très faible', color: '#EF4444' },
+    { label: 'Faible', color: '#F97316' },
+    { label: 'Moyen', color: '#F59E0B' },
+    { label: 'Fort', color: '#10B981' },
+    { label: 'Très fort', color: '#6C63FF' },
+  ];
+  return { score, ...levels[score] };
+}
 
 function AuthForm() {
   const router = useRouter();
@@ -69,9 +103,14 @@ function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
   const [form, setForm] = useState({ email: '', password: '', fullName: '', bio: '', region: '', category: '', location: '' });
 
   const set = (field, value) => { setForm(f => ({ ...f, [field]: value })); setError(''); };
+  const pwStrength = getPasswordStrength(form.password);
 
   const handleLogin = async () => {
     if (!form.email || !form.password) { setError(t('auth.missingFields', lang)); return; }
@@ -86,104 +125,213 @@ function AuthForm() {
     if (!form.email || !form.password || !form.fullName) { setError(t('auth.missingFields', lang)); return; }
     if (form.password.length < 6) { setError(t('auth.minPassword', lang)); return; }
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({ email: form.email, password: form.password, options: { data: { full_name: form.fullName } } });
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email, password: form.password,
+      options: { data: { full_name: form.fullName } }
+    });
     if (error) { setError(error.message); }
     else if (data.user) {
-      await supabase.from('skillswap_profiles').insert({ id: data.user.id, email: form.email, full_name: form.fullName, bio: form.bio, region: form.region, location: form.location, credits: 5 });
+      await supabase.from('skillswap_profiles').insert({
+        id: data.user.id, email: form.email, full_name: form.fullName,
+        bio: form.bio, region: form.region, location: form.location, credits: 5
+      });
       setSuccess(t('auth.successRegister', lang));
     }
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail) return;
+    setLoading(true);
+    await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/auth/reset`,
+    });
+    setForgotSent(true);
     setLoading(false);
   };
 
   const features = FEATURES[lang] || FEATURES.fr;
   const categories = CATEGORIES[lang] || CATEGORIES.fr;
 
+  // Modal mot de passe oublié
+  if (showForgot) return (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F8F7FF', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+      <style>{styles}</style>
+      <div style={{ width:'100%', maxWidth:'420px', margin:'20px', background:'white', borderRadius:'24px', border:'1px solid #E8E6FF', boxShadow:'0 20px 60px rgba(108,99,255,.1)', padding:'40px' }}>
+        <div style={{ textAlign:'center', marginBottom:'28px' }}>
+          <div style={{ fontSize:'48px', marginBottom:'12px' }}>🔑</div>
+          <h2 style={{ fontSize:'22px', fontWeight:800, color:'#1A1635', marginBottom:'8px' }}>
+            {lang === 'fr' ? 'Mot de passe oublié ?' : lang === 'nl' ? 'Wachtwoord vergeten?' : 'Forgot password?'}
+          </h2>
+          <p style={{ fontSize:'14px', color:'#9290B0' }}>
+            {lang === 'fr' ? 'Entrez votre email pour recevoir un lien de réinitialisation' : lang === 'nl' ? 'Voer uw e-mail in om een resetlink te ontvangen' : 'Enter your email to receive a reset link'}
+          </p>
+        </div>
+
+        {forgotSent ? (
+          <div style={{ textAlign:'center' }}>
+            <div style={{ background:'#F0FDF4', border:'1px solid #BBF7D0', color:'#166534', padding:'16px', borderRadius:'12px', fontSize:'14px', fontWeight:500, marginBottom:'24px' }}>
+              ✅ {lang === 'fr' ? 'Email envoyé ! Vérifiez votre boîte mail.' : lang === 'nl' ? 'E-mail verzonden! Controleer uw inbox.' : 'Email sent! Check your inbox.'}
+            </div>
+            <button onClick={() => { setShowForgot(false); setForgotSent(false); }} className="submit-btn">
+              {lang === 'fr' ? '← Retour à la connexion' : lang === 'nl' ? '← Terug naar inloggen' : '← Back to login'}
+            </button>
+          </div>
+        ) : (
+          <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+            <div>
+              <Label text={t('auth.email', lang)} />
+              <input type="email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)}
+                placeholder="vous@exemple.com" className="auth-input" style={{ marginTop:'8px' }}
+                onKeyDown={e => e.key === 'Enter' && handleForgotPassword()} />
+            </div>
+            <button onClick={handleForgotPassword} disabled={loading || !forgotEmail} className="submit-btn">
+              {loading ? t('common.loading', lang) : lang === 'fr' ? 'Envoyer le lien →' : lang === 'nl' ? 'Link verzenden →' : 'Send link →'}
+            </button>
+            <button onClick={() => setShowForgot(false)}
+              style={{ background:'none', border:'none', color:'#9290B0', fontSize:'13px', cursor:'pointer', fontFamily:'inherit' }}>
+              {lang === 'fr' ? '← Retour' : lang === 'nl' ? '← Terug' : '← Back'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ minHeight:'100vh', display:'flex', fontFamily:"'Plus Jakarta Sans', sans-serif" }}>
       <style>{styles}</style>
 
-      {/* Left panel - caché sur mobile */}
-      <div className="auth-left-panel" style={{ width: '480px', background: 'linear-gradient(145deg, #6C63FF 0%, #4F46E5 100%)', padding: '56px 48px', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
-        <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}></div>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '64px' }}>
-            <div style={{ width: '42px', height: '42px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🔄</div>
+      {/* Left panel */}
+      <div className="auth-left-panel" style={{ width:'480px', background:'linear-gradient(145deg,#6C63FF 0%,#4F46E5 100%)', padding:'56px 48px', flexDirection:'column', justifyContent:'space-between', flexShrink:0, position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', top:'-100px', right:'-100px', width:'400px', height:'400px', background:'rgba(255,255,255,.05)', borderRadius:'50%' }}></div>
+        <div style={{ position:'absolute', bottom:'-80px', left:'-80px', width:'300px', height:'300px', background:'rgba(255,255,255,.05)', borderRadius:'50%' }}></div>
+        <div style={{ position:'relative', zIndex:1 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'64px' }}>
+            <div style={{ width:'42px', height:'42px', background:'rgba(255,255,255,.2)', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'22px' }}>🔄</div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '20px', color: 'white' }}>SkillSwap</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Belgium</div>
+              <div style={{ fontWeight:800, fontSize:'20px', color:'white' }}>SkillSwap</div>
+              <div style={{ fontSize:'12px', color:'rgba(255,255,255,.6)' }}>Belgium</div>
             </div>
           </div>
-          <h2 style={{ fontSize: '32px', fontWeight: 800, color: 'white', marginBottom: '16px', lineHeight: 1.2, letterSpacing: '-0.5px' }}>
+          <h2 style={{ fontSize:'32px', fontWeight:800, color:'white', marginBottom:'16px', lineHeight:1.2, letterSpacing:'-0.5px' }}>
             {t('home.title1', lang)}<br />{t('home.title2', lang)}
           </h2>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: '48px' }}>
-            {t('home.subtitle', lang)}
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <p style={{ fontSize:'15px', color:'rgba(255,255,255,.75)', lineHeight:1.7, marginBottom:'48px' }}>{t('home.subtitle', lang)}</p>
+          <div style={{ display:'flex', flexDirection:'column', gap:'20px' }}>
             {features.map((item, i) => (
               <div key={i} className="feature-item">
                 <div className="feature-icon">{item.icon}</div>
                 <div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'white', marginBottom: '2px' }}>{item.title}</div>
-                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>{item.desc}</div>
+                  <div style={{ fontSize:'14px', fontWeight:700, color:'white', marginBottom:'2px' }}>{item.title}</div>
+                  <div style={{ fontSize:'13px', color:'rgba(255,255,255,.65)' }}>{item.desc}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div style={{ position: 'relative', zIndex: 1, paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>🇧🇪 © 2026 SkillSwap Belgium</p>
+        <div style={{ position:'relative', zIndex:1, paddingTop:'32px', borderTop:'1px solid rgba(255,255,255,.15)' }}>
+          <p style={{ fontSize:'13px', color:'rgba(255,255,255,.5)' }}>🇧🇪 © 2026 SkillSwap Belgium</p>
         </div>
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#F8F7FF', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px 24px' }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', background:'#F8F7FF', overflowY:'auto' }}>
+        <div style={{ display:'flex', justifyContent:'flex-end', padding:'16px 24px' }}>
           <LanguageSwitcher />
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px 40px' }}>
-          <div style={{ width: '100%', maxWidth: '460px' }}>
-            <div style={{ background: 'white', borderRadius: '24px', border: '1px solid #E8E6FF', boxShadow: '0 20px 60px rgba(108,99,255,0.1)', overflow: 'hidden' }}>
-              <div style={{ display: 'flex', borderBottom: '1px solid #E8E6FF' }}>
+        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'0 24px 40px' }}>
+          <div style={{ width:'100%', maxWidth:'460px' }}>
+            <div style={{ background:'white', borderRadius:'24px', border:'1px solid #E8E6FF', boxShadow:'0 20px 60px rgba(108,99,255,.1)', overflow:'hidden' }}>
+
+              {/* Tabs */}
+              <div style={{ display:'flex', borderBottom:'1px solid #E8E6FF' }}>
                 {[['login', t('auth.login', lang)], ['register', t('auth.register', lang)]].map(([m, label]) => (
                   <button key={m} onClick={() => { setMode(m); setError(''); setSuccess(''); }} className="tab-btn"
-                    style={{ background: mode === m ? '#EEF0FF' : 'white', color: mode === m ? '#6C63FF' : '#9290B0', borderBottom: mode === m ? '2px solid #6C63FF' : 'none' }}>
+                    style={{ background:mode===m?'#EEF0FF':'white', color:mode===m?'#6C63FF':'#9290B0', borderBottom:mode===m?'2px solid #6C63FF':'none' }}>
                     {label}
                   </button>
                 ))}
               </div>
-              <div style={{ padding: '32px' }}>
+
+              <div style={{ padding:'32px' }}>
                 {mode === 'login' ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'20px' }}>
                     <div>
-                      <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '6px' }}>{t('auth.welcome', lang)}</h2>
-                      <p style={{ fontSize: '14px', color: '#9290B0' }}>SkillSwap Belgium</p>
+                      <h2 style={{ fontSize:'22px', fontWeight:800, color:'#1A1635', marginBottom:'6px' }}>{t('auth.welcome', lang)}</h2>
+                      <p style={{ fontSize:'14px', color:'#9290B0' }}>SkillSwap Belgium</p>
                     </div>
+
                     <Field label={t('auth.email', lang)} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                    <Field label={t('auth.password', lang)} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" onEnter={handleLogin} />
+
+                    {/* Mot de passe avec œil */}
+                    <div>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'8px' }}>
+                        <Label text={t('auth.password', lang)} />
+                        <span className="forgot-link" onClick={() => setShowForgot(true)}>
+                          {lang === 'fr' ? 'Mot de passe oublié ?' : lang === 'nl' ? 'Wachtwoord vergeten?' : 'Forgot password?'}
+                        </span>
+                      </div>
+                      <div className="pw-wrap">
+                        <input type={showPw ? 'text' : 'password'} value={form.password}
+                          onChange={e => set('password', e.target.value)} placeholder="••••••••"
+                          onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                          className="auth-input" />
+                        <button className="pw-eye" onClick={() => setShowPw(v => !v)} type="button">
+                          {showPw ? '🙈' : '👁️'}
+                        </button>
+                      </div>
+                    </div>
+
                     {error && <ErrorMsg msg={error} />}
                     <button onClick={handleLogin} disabled={loading} className="submit-btn">
                       {loading ? t('common.loading', lang) : t('auth.loginBtn', lang)}
                     </button>
-                    <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+
+                    <p style={{ fontSize:'13px', color:'#9290B0', textAlign:'center' }}>
                       {t('auth.noAccount', lang)}{' '}
-                      <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('register')}>{t('auth.createFree', lang)}</span>
+                      <span style={{ color:'#6C63FF', cursor:'pointer', fontWeight:700 }} onClick={() => setMode('register')}>{t('auth.createFree', lang)}</span>
                     </p>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'18px' }}>
                     <div>
-                      <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1A1635', marginBottom: '4px' }}>{t('auth.createAccount', lang)}</h2>
-                      <p style={{ fontSize: '14px', color: '#9290B0' }}>{t('auth.free', lang)}</p>
+                      <h2 style={{ fontSize:'22px', fontWeight:800, color:'#1A1635', marginBottom:'4px' }}>{t('auth.createAccount', lang)}</h2>
+                      <p style={{ fontSize:'14px', color:'#9290B0' }}>{t('auth.free', lang)}</p>
                     </div>
+
                     <Field label={`${t('auth.fullName', lang)} *`} value={form.fullName} onChange={v => set('fullName', v)} placeholder="Jean Dupont" />
                     <Field label={`${t('auth.email', lang)} *`} type="email" value={form.email} onChange={v => set('email', v)} placeholder="vous@exemple.com" />
-                    <Field label={`${t('auth.password', lang)} *`} type="password" value={form.password} onChange={v => set('password', v)} placeholder="••••••••" />
+
+                    {/* Mot de passe avec œil + force */}
+                    <div>
+                      <Label text={`${t('auth.password', lang)} *`} />
+                      <div className="pw-wrap" style={{ marginTop:'8px' }}>
+                        <input type={showPw ? 'text' : 'password'} value={form.password}
+                          onChange={e => set('password', e.target.value)} placeholder="••••••••"
+                          className="auth-input" />
+                        <button className="pw-eye" onClick={() => setShowPw(v => !v)} type="button">
+                          {showPw ? '🙈' : '👁️'}
+                        </button>
+                      </div>
+                      {/* Barre de force */}
+                      {form.password && (
+                        <div style={{ marginTop:'8px' }}>
+                          <div style={{ display:'flex', gap:'4px' }}>
+                            {[1,2,3,4,5].map(i => (
+                              <div key={i} className="strength-bar" style={{ flex:1, background: i <= pwStrength.score ? pwStrength.color : '#E8E6FF' }} />
+                            ))}
+                          </div>
+                          <div style={{ fontSize:'11px', color:pwStrength.color, fontWeight:600, marginTop:'4px' }}>{pwStrength.label}</div>
+                        </div>
+                      )}
+                    </div>
+
                     <Field label={t('auth.city', lang)} value={form.location} onChange={v => set('location', v)} placeholder="Bruxelles, Liège, Gand..." />
+
                     <div>
                       <Label text={t('auth.region', lang)} />
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <div style={{ display:'flex', gap:'8px', marginTop:'8px' }}>
                         {REGIONS.map(r => (
                           <button key={r} onClick={() => set('region', r)} className={`opt-btn ${form.region === r ? 'active' : ''}`}>
                             {r === 'Bruxelles' ? '🏙️' : r === 'Wallonie' ? '🌿' : '🌊'} {r}
@@ -191,27 +339,38 @@ function AuthForm() {
                         ))}
                       </div>
                     </div>
+
                     <div>
                       <Label text={t('auth.skill', lang)} />
-                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                      <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginTop:'8px' }}>
                         {categories.map(c => (
                           <button key={c} onClick={() => set('category', c)} className={`opt-btn ${form.category === c ? 'active' : ''}`}>{c}</button>
                         ))}
                       </div>
                     </div>
+
                     {error && <ErrorMsg msg={error} />}
                     {success && <SuccessMsg msg={success} />}
                     <button onClick={handleRegister} disabled={loading} className="submit-btn">
                       {loading ? t('common.loading', lang) : t('auth.registerBtn', lang)}
                     </button>
-                    <p style={{ fontSize: '13px', color: '#9290B0', textAlign: 'center' }}>
+
+                    <p style={{ fontSize:'13px', color:'#9290B0', textAlign:'center' }}>
                       {t('auth.alreadyAccount', lang)}{' '}
-                      <span style={{ color: '#6C63FF', cursor: 'pointer', fontWeight: 700 }} onClick={() => setMode('login')}>{t('auth.signIn', lang)}</span>
+                      <span style={{ color:'#6C63FF', cursor:'pointer', fontWeight:700 }} onClick={() => setMode('login')}>{t('auth.signIn', lang)}</span>
                     </p>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Mentions légales */}
+            <p style={{ textAlign:'center', fontSize:'11px', color:'#9290B0', marginTop:'20px', lineHeight:1.6 }}>
+              {lang === 'fr' ? 'En vous inscrivant, vous acceptez nos' : lang === 'nl' ? 'Door u te registreren, accepteert u onze' : 'By registering, you agree to our'}{' '}
+              <a href="#" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'CGU' : lang === 'nl' ? 'Gebruiksvoorwaarden' : 'Terms'}</a>
+              {' & '}
+              <a href="#" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'Politique de confidentialité' : lang === 'nl' ? 'Privacybeleid' : 'Privacy Policy'}</a>
+            </p>
           </div>
         </div>
       </div>
@@ -219,23 +378,23 @@ function AuthForm() {
   );
 }
 
-const Label = ({ text }) => <label style={{ fontSize: '13px', fontWeight: 600, color: '#4B4869', display: 'block' }}>{text}</label>;
+const Label = ({ text }) => <label style={{ fontSize:'13px', fontWeight:600, color:'#4B4869', display:'block' }}>{text}</label>;
 
 const Field = ({ label, type = 'text', value, onChange, placeholder, onEnter }) => (
   <div>
     <Label text={label} />
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
       onKeyDown={e => e.key === 'Enter' && onEnter?.()}
-      className="auth-input" style={{ marginTop: '8px' }} />
+      className="auth-input" style={{ marginTop:'8px' }} />
   </div>
 );
 
 const ErrorMsg = ({ msg }) => (
-  <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 500 }}>⚠️ {msg}</div>
+  <div style={{ background:'#FEF2F2', border:'1px solid #FECACA', color:'#991B1B', padding:'12px 16px', borderRadius:'12px', fontSize:'13px', fontWeight:500 }}>⚠️ {msg}</div>
 );
 
 const SuccessMsg = ({ msg }) => (
-  <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', color: '#166534', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: 500 }}>✅ {msg}</div>
+  <div style={{ background:'#F0FDF4', border:'1px solid #BBF7D0', color:'#166534', padding:'12px 16px', borderRadius:'12px', fontSize:'13px', fontWeight:500 }}>✅ {msg}</div>
 );
 
 export default function AuthPage() {

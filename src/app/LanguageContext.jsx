@@ -25,6 +25,6 @@ export function LanguageProvider({ children }) {
   );
 }
 
-export function useLang() { // eslint-disable-line react-refresh/only-export-components
+export function useLang() {
   return useContext(LanguageContext);
 }

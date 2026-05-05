@@ -7,36 +7,64 @@ import { useLang } from '../LanguageContext';
 import { t } from '../i18n';
 import LanguageSwitcher from '../LanguageSwitcher';
 import MobileNav from '../MobileNav';
+import NotificationBell from '../NotificationBell';
 
 const S = `
-  .nav-link{font-size:13px;color:#4B4869;text-decoration:none;font-weight:500;transition:color .2s}
-  .nav-link:hover,.nav-link.active{color:#6C63FF;font-weight:700}
-  .logout-btn{background:none;border:none;cursor:pointer;font-size:13px;color:#9290B0;font-family:inherit;padding:8px 14px;border-radius:8px;transition:all .2s}
-  .logout-btn:hover{background:#FEF2F2;color:#EF4444}
-  .kpi-card{background:white;border:1px solid #E8E6FF;border-radius:20px;padding:24px;transition:all .2s}
-  .kpi-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(108,99,255,.1)}
-  .kpi-card.accent{background:linear-gradient(135deg,#6C63FF,#4F46E5);border-color:transparent}
-  .action-card{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:#F8F7FF;border:1px solid #E8E6FF;text-decoration:none;color:#1A1635;font-size:14px;font-weight:600;transition:all .2s}
-  .action-card:hover{border-color:#6C63FF;background:#EEF0FF;transform:translateX(4px)}
-  .action-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .profile-mini{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:#F8F7FF;border:1px solid #E8E6FF;transition:all .2s}
-  .profile-mini:hover{border-color:#6C63FF;background:#EEF0FF}
-  .skill-chip{font-size:12px;background:#EEF0FF;color:#6C63FF;padding:5px 14px;border-radius:20px;font-weight:600}
-  .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
-  .grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
-  .grid-skills{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  .welcome-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}
-  .page-wrap{max-width:1200px;margin:0 auto;padding:36px 32px}
-  .add-skill-btn{padding:11px 24px;border-radius:12px;background:linear-gradient(135deg,#6C63FF,#4F46E5);color:white;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(108,99,255,.4);white-space:nowrap}
-  .first-skill-btn{display:inline-block;padding:11px 28px;border-radius:12px;background:linear-gradient(135deg,#6C63FF,#4F46E5);color:white;text-decoration:none;font-size:14px;font-weight:700}
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+  .dash-wrap { background: #0D0D14; min-height: 100vh; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+  /* Nav */
+  .dash-nav { background: rgba(13,13,20,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 68px; position: sticky; top: 0; z-index: 100; }
+  .dash-nav-link { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; font-weight: 500; transition: color .2s; }
+  .dash-nav-link:hover, .dash-nav-link.active { color: white; font-weight: 600; }
+  .logout-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.4); font-family: inherit; padding: 8px 14px; border-radius: 8px; transition: all .2s; }
+  .logout-btn:hover { background: rgba(239,68,68,0.1); color: #EF4444; }
+
+  /* KPI cards */
+  .kpi-card { border-radius: 20px; padding: 24px; transition: all .3s; position: relative; overflow: hidden; }
+  .kpi-card:hover { transform: translateY(-4px); }
+  .kpi-accent { background: linear-gradient(135deg, #6C63FF, #4F46E5); border: none; }
+  .kpi-default { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .kpi-default:hover { background: rgba(255,255,255,0.07); border-color: rgba(108,99,255,0.3); box-shadow: 0 20px 40px rgba(108,99,255,0.1); }
+
+  /* Action cards */
+  .action-card { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); text-decoration: none; color: white; font-size: 14px; font-weight: 600; transition: all .2s; }
+  .action-card:hover { background: rgba(108,99,255,0.12); border-color: rgba(108,99,255,0.3); transform: translateX(4px); }
+  .action-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+  /* Profile mini */
+  .profile-mini { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); transition: all .2s; }
+  .profile-mini:hover { background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.3); }
+
+  /* Skill chip */
+  .skill-chip { font-size: 12px; background: rgba(108,99,255,0.2); color: #a5a0ff; padding: 4px 12px; border-radius: 20px; font-weight: 600; border: 1px solid rgba(108,99,255,0.2); }
+
+  /* Card container */
+  .dash-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; }
+
+  /* Grilles */
+  .grid-kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+  .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-skills { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+  .page-wrap { max-width: 1200px; margin: 0 auto; padding: 32px; }
+  .welcome-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .add-btn { padding: 11px 24px; border-radius: 50px; background: linear-gradient(135deg,#6C63FF,#4F46E5); color: white; text-decoration: none; font-size: 14px; font-weight: 700; box-shadow: 0 0 30px rgba(108,99,255,0.3); white-space: nowrap; transition: all .2s; }
+  .add-btn:hover { box-shadow: 0 0 50px rgba(108,99,255,0.5); transform: translateY(-1px); }
+  .first-skill-btn { display: inline-block; padding: 11px 28px; border-radius: 50px; background: linear-gradient(135deg,#6C63FF,#4F46E5); color: white; text-decoration: none; font-size: 14px; font-weight: 700; transition: all .2s; }
+  .first-skill-btn:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(108,99,255,.4); }
+
+  /* Glow */
+  .glow-dot { width: 6px; height: 6px; background: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; display: inline-block; }
+
   @media(max-width:1024px){
-    .grid-kpi{grid-template-columns:repeat(2,1fr);gap:12px}
-    .grid-2col{grid-template-columns:1fr;gap:16px}
-    .grid-skills{grid-template-columns:repeat(2,1fr)}
-    .welcome-row{flex-direction:column;align-items:flex-start;gap:12px}
-    .page-wrap{padding:20px 16px}
-    .add-skill-btn{width:100%;text-align:center;display:block}
-    .first-skill-btn{width:100%;text-align:center;display:block;box-sizing:border-box}
+    .grid-kpi { grid-template-columns: repeat(2,1fr); }
+    .grid-2col { grid-template-columns: 1fr; }
+    .grid-skills { grid-template-columns: repeat(2,1fr); }
+    .welcome-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .page-wrap { padding: 20px 16px 80px; }
+    .add-btn { width: 100%; text-align: center; display: block; }
+    .first-skill-btn { width: 100%; text-align: center; display: block; box-sizing: border-box; }
   }
 `;
 
@@ -66,36 +94,47 @@ export default function DashboardPage() {
 
   const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
   const firstName = profile?.full_name?.split(' ')[0] || '';
-  const initials = profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : user?.email?.[0]?.toUpperCase() || '?';
+  const initials = profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : user?.email?.[0]?.toUpperCase() || '?';
+
+  const BANNER_GRADIENTS = ['linear-gradient(135deg,#6C63FF,#EC4899)','linear-gradient(135deg,#10B981,#3B82F6)','linear-gradient(135deg,#F59E0B,#EF4444)','linear-gradient(135deg,#8B5CF6,#06B6D4)','linear-gradient(135deg,#EC4899,#F97316)','linear-gradient(135deg,#1A1635,#6C63FF)'];
+  const bannerGrad = BANNER_GRADIENTS[profile?.banner_index || 0];
 
   if (loading) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', flexDirection:'column', gap:'16px', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#0D0D14', flexDirection:'column', gap:'16px', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
       <style>{S}</style>
-      <div style={{ width:'48px', height:'48px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'14px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'24px' }}>🔄</div>
-      <p style={{ color:'#9290B0', fontWeight:500 }}>{t('common.loading', lang)}</p>
+      <div style={{ width:'52px', height:'52px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'16px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'26px' }}>🔄</div>
+      <p style={{ color:'rgba(255,255,255,0.4)', fontWeight:500 }}>{t('common.loading', lang)}</p>
     </div>
   );
 
   return (
-    <div style={{ minHeight:'100vh', background:'#F8F7FF', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+    <div className="dash-wrap">
       <style>{S}</style>
 
-      <nav className="desktop-nav" style={{ background:'rgba(255,255,255,0.9)', backdropFilter:'blur(20px)', borderBottom:'1px solid #E8E6FF', padding:'0 32px', alignItems:'center', justifyContent:'space-between', height:'68px', position:'sticky', top:0, zIndex:100 }}>
+      {/* Navbar */}
+      <nav className="dash-nav">
         <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', textDecoration:'none' }}>
-          <div style={{ width:'36px', height:'36px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px' }}>🔄</div>
+          <div style={{ width:'34px', height:'34px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'17px' }}>🔄</div>
           <span style={{ fontWeight:800, fontSize:'17px', background:'linear-gradient(135deg,#6C63FF,#EC4899)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>SkillSwap</span>
         </Link>
         <div style={{ display:'flex', gap:'28px' }}>
-          {[['/dashboard',t('nav.dashboard',lang),true],['/explore',t('nav.explore',lang),false],['/profile',t('nav.profile',lang),false],['/exchanges',t('nav.exchanges',lang),false]].map(([href,label,active]) => (
-            <Link key={href} href={href} className={`nav-link ${active?'active':''}`}>{label}</Link>
+          {[
+            ['/dashboard', t('nav.dashboard',lang), true],
+            ['/explore',   t('nav.explore',lang),   false],
+            ['/profile',   t('nav.profile',lang),   false],
+            ['/exchanges', t('nav.exchanges',lang),  false],
+            ['/messages',  t('nav.messages',lang),   false],
+          ].map(([href,label,active]) => (
+            <Link key={href} href={href} className={`dash-nav-link ${active?'active':''}`}>{label}</Link>
           ))}
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:'14px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+          <NotificationBell dark />
           <LanguageSwitcher />
-          <div style={{ background:'#EEF0FF', color:'#6C63FF', padding:'8px 18px', borderRadius:'20px', fontSize:'13px', fontWeight:700, border:'1px solid #E8E6FF' }}>
-            ⏱️ {profile?.credits || 0} {t('explore.credits', lang)}
+          <div style={{ background:'rgba(108,99,255,0.15)', color:'#a5a0ff', padding:'7px 16px', borderRadius:'20px', fontSize:'13px', fontWeight:700, border:'1px solid rgba(108,99,255,0.2)' }}>
+            ⏱️ {profile?.credits || 0} crédits
           </div>
-          <div style={{ width:'36px', height:'36px', borderRadius:'50%', background:'linear-gradient(135deg,#6C63FF,#EC4899)', color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:'13px' }}>{initials}</div>
+          <Link href="/profile" style={{ width:'36px', height:'36px', borderRadius:'50%', background:bannerGrad, color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:'13px', textDecoration:'none', boxShadow:'0 0 12px rgba(108,99,255,.4)' }}>{initials}</Link>
           <button onClick={handleLogout} className="logout-btn">↩ {t('nav.logout', lang)}</button>
         </div>
       </nav>
@@ -103,16 +142,25 @@ export default function DashboardPage() {
       <MobileNav active="/dashboard" />
 
       <div className="page-wrap">
+
+        {/* Welcome */}
         <div className="welcome-row">
           <div>
-            <h1 style={{ fontSize:'28px', fontWeight:800, color:'#1A1635', marginBottom:'4px', letterSpacing:'-0.5px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'6px' }}>
+              <span className="glow-dot"></span>
+              <span style={{ fontSize:'12px', color:'rgba(255,255,255,0.4)', fontWeight:600, letterSpacing:'1px', textTransform:'uppercase' }}>
+                {lang==='fr'?'En ligne':lang==='nl'?'Online':'Online'}
+              </span>
+            </div>
+            <h1 style={{ fontSize:'30px', fontWeight:900, color:'white', marginBottom:'4px', letterSpacing:'-1px' }}>
               {t('dashboard.hello', lang)} {firstName} 👋
             </h1>
-            <p style={{ color:'#9290B0', fontSize:'14px' }}>{t('dashboard.subtitle', lang)}</p>
+            <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'14px' }}>{t('dashboard.subtitle', lang)}</p>
           </div>
-          <Link href="/profile" className="add-skill-btn">{t('dashboard.addSkill', lang)}</Link>
+          <Link href="/profile" className="add-btn">{t('dashboard.addSkill', lang)}</Link>
         </div>
 
+        {/* KPIs */}
         <div className="grid-kpi">
           {[
             { icon:'⏱️', label:t('dashboard.credits',lang), value:profile?.credits||0, sub:t('dashboard.creditsUsable',lang), accent:true },
@@ -120,55 +168,57 @@ export default function DashboardPage() {
             { icon:'🤝', label:t('dashboard.exchanges',lang), value:0, sub:t('dashboard.thisMonth',lang), accent:false },
             { icon:'⭐', label:t('dashboard.rating',lang), value:'—', sub:t('dashboard.outOf5',lang), accent:false },
           ].map((kpi, i) => (
-            <div key={i} className={`kpi-card ${kpi.accent?'accent':''}`}>
-              <div style={{ fontSize:'28px', marginBottom:'12px' }}>{kpi.icon}</div>
-              <div style={{ fontSize:'30px', fontWeight:800, color:kpi.accent?'white':'#1A1635', marginBottom:'4px' }}>{kpi.value}</div>
-              <div style={{ fontSize:'13px', fontWeight:600, color:kpi.accent?'rgba(255,255,255,0.9)':'#1A1635', marginBottom:'3px' }}>{kpi.label}</div>
-              <div style={{ fontSize:'12px', color:kpi.accent?'rgba(255,255,255,0.6)':'#9290B0' }}>{kpi.sub}</div>
+            <div key={i} className={`kpi-card ${kpi.accent?'kpi-accent':'kpi-default'}`}>
+              <div style={{ fontSize:'26px', marginBottom:'12px' }}>{kpi.icon}</div>
+              <div style={{ fontSize:'32px', fontWeight:900, color:'white', marginBottom:'4px', letterSpacing:'-1px' }}>{kpi.value}</div>
+              <div style={{ fontSize:'13px', fontWeight:700, color:kpi.accent?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.8)', marginBottom:'2px' }}>{kpi.label}</div>
+              <div style={{ fontSize:'12px', color:kpi.accent?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.35)' }}>{kpi.sub}</div>
             </div>
           ))}
         </div>
 
+        {/* Actions + Profils */}
         <div className="grid-2col">
-          <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'28px' }}>
-            <h2 style={{ fontSize:'17px', fontWeight:800, color:'#1A1635', marginBottom:'20px' }}>{t('dashboard.quickActions', lang)}</h2>
-            <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+          <div className="dash-card">
+            <h2 style={{ fontSize:'16px', fontWeight:800, color:'white', marginBottom:'16px' }}>{t('dashboard.quickActions', lang)}</h2>
+            <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
               {[
-                { href:'/profile', icon:'➕', label:t('dashboard.addSkillAction',lang), color:'#EEF0FF' },
-                { href:'/explore', icon:'🔍', label:t('dashboard.findProfile',lang), color:'#F0FDF4' },
-                { href:'/exchanges', icon:'🤝', label:t('dashboard.myExchanges',lang), color:'#FFF7ED' },
+                { href:'/profile',   icon:'➕', label:t('dashboard.addSkillAction',lang), bg:'rgba(108,99,255,0.15)' },
+                { href:'/explore',   icon:'🔍', label:t('dashboard.findProfile',lang),    bg:'rgba(16,185,129,0.15)' },
+                { href:'/exchanges', icon:'🤝', label:t('dashboard.myExchanges',lang),    bg:'rgba(245,158,11,0.15)' },
+                { href:'/messages',  icon:'💬', label:t('nav.messages',lang),             bg:'rgba(236,72,153,0.15)' },
               ].map((action, i) => (
                 <Link key={i} href={action.href} className="action-card">
-                  <div className="action-icon" style={{ background:action.color }}><span>{action.icon}</span></div>
+                  <div className="action-icon" style={{ background:action.bg }}><span>{action.icon}</span></div>
                   {action.label}
-                  <span style={{ marginLeft:'auto', color:'#9290B0' }}>→</span>
+                  <span style={{ marginLeft:'auto', color:'rgba(255,255,255,0.3)' }}>→</span>
                 </Link>
               ))}
             </div>
           </div>
 
-          <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'28px' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' }}>
-              <h2 style={{ fontSize:'17px', fontWeight:800, color:'#1A1635' }}>{t('dashboard.suggested', lang)}</h2>
-              <Link href="/explore" style={{ fontSize:'13px', color:'#6C63FF', textDecoration:'none', fontWeight:600 }}>{t('dashboard.seeAll', lang)}</Link>
+          <div className="dash-card">
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px' }}>
+              <h2 style={{ fontSize:'16px', fontWeight:800, color:'white' }}>{t('dashboard.suggested', lang)}</h2>
+              <Link href="/explore" style={{ fontSize:'12px', color:'#a5a0ff', textDecoration:'none', fontWeight:600 }}>{t('dashboard.seeAll', lang)}</Link>
             </div>
             {matches.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'32px 20px' }}>
-                <div style={{ fontSize:'40px', marginBottom:'12px' }}>👥</div>
-                <p style={{ fontSize:'14px', color:'#9290B0' }}>{t('dashboard.noProfiles', lang)}</p>
+              <div style={{ textAlign:'center', padding:'28px' }}>
+                <div style={{ fontSize:'36px', marginBottom:'10px' }}>👥</div>
+                <p style={{ fontSize:'13px', color:'rgba(255,255,255,0.35)' }}>{t('dashboard.noProfiles', lang)}</p>
               </div>
             ) : (
-              <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
                 {matches.map((m, i) => {
                   const colors = ['linear-gradient(135deg,#6C63FF,#EC4899)','linear-gradient(135deg,#10B981,#3B82F6)','linear-gradient(135deg,#F59E0B,#EF4444)','linear-gradient(135deg,#8B5CF6,#EC4899)'];
                   return (
                     <div key={i} className="profile-mini">
-                      <div style={{ width:'38px', height:'38px', borderRadius:'50%', background:colors[i%4], color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:'14px', flexShrink:0 }}>{m.full_name?.[0]||'?'}</div>
+                      <div style={{ width:'36px', height:'36px', borderRadius:'50%', background:colors[i%4], color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:'13px', flexShrink:0 }}>{m.full_name?.[0]||'?'}</div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontSize:'14px', fontWeight:700, color:'#1A1635', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{m.full_name||'Anonyme'}</div>
-                        <div style={{ fontSize:'12px', color:'#9290B0' }}>{m.region||t('common.belgium',lang)}</div>
+                        <div style={{ fontSize:'13px', fontWeight:700, color:'white', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{m.full_name||'Anonyme'}</div>
+                        <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.35)' }}>{m.region||t('common.belgium',lang)}</div>
                       </div>
-                      <div style={{ fontSize:'12px', background:'#EEF0FF', color:'#6C63FF', padding:'4px 12px', borderRadius:'20px', fontWeight:700, flexShrink:0 }}>⏱️ {m.credits}</div>
+                      <div style={{ fontSize:'11px', background:'rgba(108,99,255,0.2)', color:'#a5a0ff', padding:'3px 10px', borderRadius:'20px', fontWeight:700, flexShrink:0 }}>⏱️ {m.credits}</div>
                     </div>
                   );
                 })}
@@ -177,26 +227,27 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'20px', padding:'28px' }}>
+        {/* Mes compétences */}
+        <div className="dash-card">
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' }}>
-            <h2 style={{ fontSize:'17px', fontWeight:800, color:'#1A1635' }}>{t('dashboard.mySkills', lang)}</h2>
-            <Link href="/profile" style={{ padding:'8px 18px', borderRadius:'10px', background:'linear-gradient(135deg,#6C63FF,#4F46E5)', color:'white', textDecoration:'none', fontSize:'13px', fontWeight:700 }}>{t('dashboard.addSkill', lang)}</Link>
+            <h2 style={{ fontSize:'16px', fontWeight:800, color:'white' }}>{t('dashboard.mySkills', lang)}</h2>
+            <Link href="/profile" style={{ padding:'7px 16px', borderRadius:'20px', background:'rgba(108,99,255,0.15)', color:'#a5a0ff', textDecoration:'none', fontSize:'12px', fontWeight:700, border:'1px solid rgba(108,99,255,0.2)', transition:'all .2s' }}>{t('dashboard.addSkill', lang)}</Link>
           </div>
           {skills.length === 0 ? (
-            <div style={{ textAlign:'center', padding:'48px 20px' }}>
-              <div style={{ fontSize:'48px', marginBottom:'16px' }}>🎯</div>
-              <p style={{ fontSize:'16px', fontWeight:700, color:'#1A1635', marginBottom:'8px' }}>{t('dashboard.noSkills', lang)}</p>
-              <p style={{ fontSize:'14px', color:'#9290B0', marginBottom:'20px' }}>{t('profile.noSkills', lang)}</p>
+            <div style={{ textAlign:'center', padding:'40px' }}>
+              <div style={{ fontSize:'48px', marginBottom:'14px' }}>🎯</div>
+              <p style={{ fontSize:'15px', fontWeight:700, color:'white', marginBottom:'6px' }}>{t('dashboard.noSkills', lang)}</p>
+              <p style={{ fontSize:'13px', color:'rgba(255,255,255,0.35)', marginBottom:'20px' }}>{t('profile.noSkills', lang)}</p>
               <Link href="/profile" className="first-skill-btn">{t('dashboard.addFirstSkill', lang)}</Link>
             </div>
           ) : (
             <div className="grid-skills">
               {skills.map((s, i) => (
-                <div key={i} style={{ background:'#F8F7FF', border:'1px solid #E8E6FF', borderRadius:'14px', padding:'16px' }}>
-                  <div style={{ fontSize:'14px', fontWeight:700, color:'#1A1635', marginBottom:'6px' }}>{s.title}</div>
+                <div key={i} style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'14px', padding:'14px', transition:'all .2s' }}>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:'white', marginBottom:'6px' }}>{s.title}</div>
                   <div style={{ display:'flex', gap:'6px', alignItems:'center' }}>
                     <span className="skill-chip">{s.category}</span>
-                    <span style={{ fontSize:'11px', color:'#9290B0' }}>{s.level}</span>
+                    <span style={{ fontSize:'11px', color:'rgba(255,255,255,0.3)' }}>{s.level}</span>
                   </div>
                 </div>
               ))}

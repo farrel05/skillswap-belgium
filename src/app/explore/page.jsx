@@ -7,6 +7,7 @@ import { useLang } from '../LanguageContext';
 import { t } from '../i18n';
 import LanguageSwitcher from '../LanguageSwitcher';
 import MobileNav from '../MobileNav';
+import NotificationBell from '../NotificationBell';
 
 const CATEGORIES_I18N = {
   fr: ['Tous','Tech / Dev','Design','Marketing','Rédaction','Comptabilité','Photo / Vidéo','Langues','Coaching'],
@@ -100,6 +101,7 @@ export default function ExplorePage() {
           ))}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+          <NotificationBell />
           <LanguageSwitcher />
           {currentUser
             ? <Link href="/profile" style={{ padding:'9px 20px', borderRadius:'10px', background:'linear-gradient(135deg,#6C63FF,#4F46E5)', color:'white', textDecoration:'none', fontSize:'13px', fontWeight:700 }}>{t('nav.profile',lang)} →</Link>
