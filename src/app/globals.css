@@ -152,7 +152,7 @@ html, body {
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   /* Afficher nav mobile */
-  .mobile-bottom-nav { display: flex; }
+  .mobile-bottom-nav { display: block !important; }
   .mobile-top-header { display: flex; }
   .mobile-top-bar { display: flex !important; }
 
