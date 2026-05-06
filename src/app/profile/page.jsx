@@ -194,35 +194,37 @@ export default function ProfilePage() {
       <MobileNav active="/profile" />
 
       <div className="page-wrap" style={{ paddingTop:0 }}>
-        <div style={{ position:'relative', marginBottom:'80px' }}>
-          <div style={{ height:'180px', background:BANNER_GRADIENTS[bannerIndex], borderRadius:'0 0 24px 24px', position:'relative', overflow:'hidden' }}>
+        {/* Bannière + Avatar — layout responsive */}
+        <div style={{ marginBottom:'24px' }}>
+          {/* Bannière */}
+          <div style={{ height:'140px', background:BANNER_GRADIENTS[bannerIndex], borderRadius:'0 0 20px 20px', position:'relative', overflow:'hidden', marginBottom:'0' }}>
             <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'200px', height:'200px', background:'rgba(255,255,255,.08)', borderRadius:'50%' }}></div>
-            <div style={{ position:'absolute', bottom:'-60px', left:'-30px', width:'150px', height:'150px', background:'rgba(255,255,255,.06)', borderRadius:'50%' }}></div>
           </div>
-          <div style={{ position:'absolute', bottom:'-60px', left:'24px', display:'flex', alignItems:'flex-end', gap:'16px' }}>
-            <div className="avatar-ring" style={{ background:BANNER_GRADIENTS[bannerIndex] }}>
-              {initials}
-              <div className="avatar-overlay">📷</div>
-            </div>
-            <div style={{ paddingBottom:'8px' }}>
-              <h1 style={{ fontSize:'22px', fontWeight:800, color:'#1A1635', marginBottom:'2px' }}>{profile?.full_name || 'Mon profil'}</h1>
-              <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap' }}>
-                {profile?.region && <span style={{ fontSize:'12px', color:'#9290B0' }}>📍 {profile.region}</span>}
-                {profile?.location && <span style={{ fontSize:'12px', color:'#9290B0' }}>· {profile.location}</span>}
+          {/* Avatar + infos + stats */}
+          <div style={{ padding:'0 16px' }}>
+            <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginTop:'-40px', marginBottom:'12px', flexWrap:'wrap', gap:'8px' }}>
+              <div className="avatar-ring" style={{ background:BANNER_GRADIENTS[bannerIndex], width:'80px', height:'80px', fontSize:'28px', border:'3px solid white' }}>
+                {initials}
+                <div className="avatar-overlay">📷</div>
+              </div>
+              <div style={{ display:'flex', gap:'8px', paddingBottom:'4px' }}>
+                {[
+                  { val: skillsOffered.length, label: lang==='fr'?'Skills':lang==='nl'?'Skills':'Skills' },
+                  { val: completedExchanges,   label: lang==='fr'?'Échanges':'Uitwisselingen' },
+                  { val: avgRating,            label: lang==='fr'?'Note':'Score' },
+                ].map((s, i) => (
+                  <div key={i} style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'12px', padding:'8px 12px', textAlign:'center', minWidth:'60px' }}>
+                    <div className="stat-val" style={{ fontSize:'18px' }}>{s.val}</div>
+                    <div style={{ fontSize:'10px', color:'#9290B0', fontWeight:600, marginTop:'1px' }}>{s.label}</div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-          <div style={{ position:'absolute', bottom:'-60px', right:'0', display:'flex', gap:'10px' }}>
-            {[
-              { val: skillsOffered.length, label: lang==='fr'?'Compétences':lang==='nl'?'Vaardigheden':'Skills' },
-              { val: completedExchanges,   label: lang==='fr'?'Échanges':lang==='nl'?'Uitwisselingen':'Exchanges' },
-              { val: avgRating,            label: lang==='fr'?'Note moy.':lang==='nl'?'Gem. score':'Avg rating' },
-            ].map((s, i) => (
-              <div key={i} className="stat-box">
-                <div className="stat-val">{s.val}</div>
-                <div style={{ fontSize:'11px', color:'#9290B0', fontWeight:600, marginTop:'2px', whiteSpace:'nowrap' }}>{s.label}</div>
-              </div>
-            ))}
+            <h1 style={{ fontSize:'20px', fontWeight:800, color:'#1A1635', marginBottom:'2px' }}>{profile?.full_name || 'Mon profil'}</h1>
+            <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap' }}>
+              {profile?.region && <span style={{ fontSize:'12px', color:'#9290B0' }}>📍 {profile.region}</span>}
+              {profile?.location && <span style={{ fontSize:'12px', color:'#9290B0' }}>· {profile.location}</span>}
+            </div>
           </div>
         </div>
 

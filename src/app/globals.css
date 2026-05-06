@@ -144,11 +144,17 @@ html, body {
 .profile-mini:hover { border-color: var(--p); background: var(--pl); }
 .skill-chip { font-size: 12px; background: var(--pl); color: var(--p); padding: 5px 14px; border-radius: 20px; font-weight: 600; }
 
+/* ── MOBILE TOP BAR ─────────────────────────────────────── */
+.mobile-top-bar {
+  display: none;
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
   /* Afficher nav mobile */
   .mobile-bottom-nav { display: flex; }
   .mobile-top-header { display: flex; }
+  .mobile-top-bar { display: flex !important; }
 
   /* Cacher navbars desktop */
   .desktop-nav { display: none !important; }
