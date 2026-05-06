@@ -85,6 +85,8 @@ export default function ProfilePage() {
   const [newSkill, setNewSkill] = useState({ title: '', description: '', categoryIndex: 0, levelIndex: 1 });
   const [profileForm, setProfileForm] = useState({ full_name: '', bio: '', location: '', region: '' });
 
+  const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
+
   const loadData = useCallback(async () => {
     const { data: { user: u } } = await supabase.auth.getUser();
     if (!u) { router.push('/auth'); return; }
@@ -275,6 +277,12 @@ export default function ProfilePage() {
               <button onClick={saveProfile} disabled={saving} className="save-btn"
                 style={{ background:saved?'#10B981':'linear-gradient(135deg,#6C63FF,#4F46E5)', color:'white', boxShadow:saved?'0 4px 14px rgba(16,185,129,.3)':'0 4px 14px rgba(108,99,255,.3)' }}>
                 {saving?'⏳ '+t('profile.saving',lang):saved?'✅ '+t('profile.saved',lang):'✓ '+t('profile.save',lang)}
+              </button>
+
+              {/* Déconnexion mobile */}
+              <button onClick={handleLogout}
+                style={{ marginTop:'12px', width:'100%', padding:'12px', borderRadius:'12px', background:'#FEF2F2', border:'1px solid #FECACA', color:'#EF4444', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:'inherit', transition:'all .2s' }}>
+                ↩ {t('nav.logout', lang)}
               </button>
             </div>
           </div>

@@ -239,13 +239,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Bouton déconnexion visible sur mobile */}
-        <div style={{ marginTop:'24px', paddingTop:'20px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
-          <button onClick={handleLogout}
-            style={{ width:'100%', padding:'13px', borderRadius:'14px', background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', color:'#EF4444', fontSize:'14px', fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>
-            ↩ {t('nav.logout', lang)}
-          </button>
-        </div>
+
       </div>
     </div>
   );
