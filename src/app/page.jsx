@@ -231,8 +231,14 @@ export default function HomePage() {
         </div>
         <p style={{ fontSize:'13px', color:'rgba(255,255,255,.3)' }}>🇧🇪 FR · NL · EN · © 2026</p>
         <div style={{ display:'flex', gap:'20px' }}>
-          {['Confidentialité','CGU','Contact'].map(l => (
-            <a key={l} href="#" style={{ fontSize:'13px', color:'rgba(255,255,255,.35)', textDecoration:'none' }}>{l}</a>
+          {[
+            { label:'Confidentialité', href:'/legal' },
+            { label:'CGU',             href:'/legal' },
+            { label: 'Contact',        href: '/contact' },
+          ].map(item => (
+            <a key={item.label} href={item.href} style={{ fontSize:'13px', color:'rgba(255,255,255,.35)', textDecoration:'none', transition:'color .2s' }}
+              onMouseOver={e=>e.target.style.color='white'}
+              onMouseOut={e=>e.target.style.color='rgba(255,255,255,.35)'}>{item.label}</a>
           ))}
         </div>
       </footer>

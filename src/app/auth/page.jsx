@@ -367,9 +367,9 @@ function AuthForm() {
             {/* Mentions légales */}
             <p style={{ textAlign:'center', fontSize:'11px', color:'#9290B0', marginTop:'20px', lineHeight:1.6 }}>
               {lang === 'fr' ? 'En vous inscrivant, vous acceptez nos' : lang === 'nl' ? 'Door u te registreren, accepteert u onze' : 'By registering, you agree to our'}{' '}
-              <a href="#" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'CGU' : lang === 'nl' ? 'Gebruiksvoorwaarden' : 'Terms'}</a>
+              <a href="/legal" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'CGU' : lang === 'nl' ? 'Gebruiksvoorwaarden' : 'Terms'}</a>
               {' & '}
-              <a href="#" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'Politique de confidentialité' : lang === 'nl' ? 'Privacybeleid' : 'Privacy Policy'}</a>
+              <a href="/legal" style={{ color:'#6C63FF', textDecoration:'none' }}>{lang === 'fr' ? 'Politique de confidentialité' : lang === 'nl' ? 'Privacybeleid' : 'Privacy Policy'}</a>
             </p>
           </div>
         </div>
