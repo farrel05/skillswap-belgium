@@ -16,7 +16,7 @@ export async function POST(req) {
     if (!pack) return NextResponse.json({ error: 'Pack invalide' }, { status: 400 });
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'bancontact', 'ideal'],
+      payment_method_types: ['card', 'bancontact'],
       mode: 'payment',
       customer_email: userEmail,
       line_items: [{

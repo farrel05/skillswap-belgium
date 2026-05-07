@@ -194,36 +194,44 @@ export default function ProfilePage() {
       <MobileNav active="/profile" />
 
       <div className="page-wrap" style={{ paddingTop:0 }}>
-        {/* Bannière + Avatar — layout responsive */}
-        <div style={{ marginBottom:'24px' }}>
+        {/* Header Profil — bannière + avatar + stats */}
+        <div style={{ marginBottom:'24px', background:'white', borderRadius:'0 0 20px 20px', overflow:'hidden', boxShadow:'0 2px 12px rgba(108,99,255,.06)' }}>
           {/* Bannière */}
-          <div style={{ height:'140px', background:BANNER_GRADIENTS[bannerIndex], borderRadius:'0 0 20px 20px', position:'relative', overflow:'hidden', marginBottom:'0' }}>
-            <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'200px', height:'200px', background:'rgba(255,255,255,.08)', borderRadius:'50%' }}></div>
+          <div style={{ height:'120px', background:BANNER_GRADIENTS[bannerIndex], position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:'-30px', right:'-30px', width:'180px', height:'180px', background:'rgba(255,255,255,.08)', borderRadius:'50%' }}></div>
+            <div style={{ position:'absolute', bottom:'-40px', left:'-20px', width:'120px', height:'120px', background:'rgba(255,255,255,.05)', borderRadius:'50%' }}></div>
           </div>
-          {/* Avatar + infos + stats */}
-          <div style={{ padding:'0 16px' }}>
-            <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginTop:'-40px', marginBottom:'12px', flexWrap:'wrap', gap:'8px' }}>
-              <div className="avatar-ring" style={{ background:BANNER_GRADIENTS[bannerIndex], width:'80px', height:'80px', fontSize:'28px', border:'3px solid white' }}>
+
+          {/* Avatar + Nom + Stats */}
+          <div style={{ padding:'0 16px 16px' }}>
+            {/* Avatar flottant */}
+            <div style={{ marginTop:'-44px', marginBottom:'12px' }}>
+              <div className="avatar-ring" style={{ background:BANNER_GRADIENTS[bannerIndex], width:'80px', height:'80px', fontSize:'28px', border:'4px solid white', boxShadow:'0 4px 16px rgba(0,0,0,.15)' }}>
                 {initials}
                 <div className="avatar-overlay">📷</div>
               </div>
-              <div style={{ display:'flex', gap:'8px', paddingBottom:'4px' }}>
-                {[
-                  { val: skillsOffered.length, label: lang==='fr'?'Skills':lang==='nl'?'Skills':'Skills' },
-                  { val: completedExchanges,   label: lang==='fr'?'Échanges':'Uitwisselingen' },
-                  { val: avgRating,            label: lang==='fr'?'Note':'Score' },
-                ].map((s, i) => (
-                  <div key={i} style={{ background:'white', border:'1px solid #E8E6FF', borderRadius:'12px', padding:'8px 12px', textAlign:'center', minWidth:'60px' }}>
-                    <div className="stat-val" style={{ fontSize:'18px' }}>{s.val}</div>
-                    <div style={{ fontSize:'10px', color:'#9290B0', fontWeight:600, marginTop:'1px' }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
             </div>
-            <h1 style={{ fontSize:'20px', fontWeight:800, color:'#1A1635', marginBottom:'2px' }}>{profile?.full_name || 'Mon profil'}</h1>
-            <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap' }}>
+
+            {/* Nom + localisation */}
+            <h1 style={{ fontSize:'20px', fontWeight:800, color:'#1A1635', marginBottom:'4px' }}>{profile?.full_name || 'Mon profil'}</h1>
+            <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap', marginBottom:'16px' }}>
               {profile?.region && <span style={{ fontSize:'12px', color:'#9290B0' }}>📍 {profile.region}</span>}
               {profile?.location && <span style={{ fontSize:'12px', color:'#9290B0' }}>· {profile.location}</span>}
+            </div>
+
+            {/* Stats en ligne */}
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'10px' }}>
+              {[
+                { val: skillsOffered.length, label: lang==='fr'?'Compétences':lang==='nl'?'Vaardigheden':'Skills', icon:'🎯' },
+                { val: completedExchanges,   label: lang==='fr'?'Échanges':lang==='nl'?'Uitwisselingen':'Exchanges', icon:'🤝' },
+                { val: avgRating,            label: lang==='fr'?'Note moy.':lang==='nl'?'Gem. score':'Avg rating', icon:'⭐' },
+              ].map((s, i) => (
+                <div key={i} style={{ background:'#F8F7FF', border:'1px solid #E8E6FF', borderRadius:'12px', padding:'10px', textAlign:'center' }}>
+                  <div style={{ fontSize:'10px', marginBottom:'4px' }}>{s.icon}</div>
+                  <div className="stat-val" style={{ fontSize:'20px' }}>{s.val}</div>
+                  <div style={{ fontSize:'10px', color:'#9290B0', fontWeight:600, marginTop:'2px' }}>{s.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
