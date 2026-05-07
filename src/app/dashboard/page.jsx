@@ -120,9 +120,9 @@ export default function DashboardPage() {
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
           <NotificationBell dark />
           <LanguageSwitcher />
-          <div style={{ background:'rgba(108,99,255,0.15)', color:'#a5a0ff', padding:'7px 16px', borderRadius:'20px', fontSize:'13px', fontWeight:700, border:'1px solid rgba(108,99,255,0.2)' }}>
+          <Link href="/credits" style={{ background:'rgba(108,99,255,0.15)', color:'#a5a0ff', padding:'7px 16px', borderRadius:'20px', fontSize:'13px', fontWeight:700, border:'1px solid rgba(108,99,255,0.2)', textDecoration:'none', display:'flex', alignItems:'center', gap:'4px', transition:'all .2s' }}>
             ⏱️ {profile?.credits || 0} crédits
-          </div>
+          </Link>
           <Link href="/profile" style={{ width:'36px', height:'36px', borderRadius:'50%', background:bannerGrad, color:'white', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:'13px', textDecoration:'none', boxShadow:'0 0 12px rgba(108,99,255,.4)' }}>{initials}</Link>
           <button onClick={handleLogout} className="logout-btn">↩ {t('nav.logout', lang)}</button>
         </div>
